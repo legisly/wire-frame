@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legisly Labs - Complete Wireframes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: { 50:'#FFFEF9',100:'#FFF8F0',200:'#FFF3E0',300:'#FFE8C7',400:'#FFDDA0',500:'#FFD080' },
+            navy: { 500:'#2D4A6A',600:'#2A3F5A',700:'#22354D',800:'#1A2840',900:'#121D30',950:'#0C1420' },
+            warm: { 800:'#1E2235',900:'#16192A',950:'#111420' },
+            gold: { 200:'#FFE5A0',300:'#FFD97D',400:'#FFC94D',500:'#EDAE49',600:'#D4940A' },
+            coral: { 200:'#FFB5A8',300:'#FF9A8B',400:'#FF8A80',500:'#FF6B6B',600:'#E85555' },
+            sage: { 200:'#C8ECD8',300:'#B8E0C8',400:'#A8D5BA',500:'#7CB892',600:'#5EA075' },
+            violet: { 200:'#C9B8FF',300:'#B4A0FF',400:'#9B82FC',500:'#8B5CF6',600:'#7C3AED' },
+            sky: { 400:'#38BDF8',500:'#0EA5E9',600:'#0284C7' },
+            ember: { 400:'#FFB347',500:'#FF9F1C',600:'#E8890C' },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap');
+    body { font-family: 'DM Sans', sans-serif; }
+    .font-display { font-family: 'Fraunces', serif; }
+    @keyframes ping { 75%,100% { transform:scale(2); opacity:0; } }
+    .anim-ping { animation: ping 1s cubic-bezier(0,0,0.2,1) infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.5; } }
+    .anim-pulse { animation: pulse 2s cubic-bezier(0.4,0,0.6,1) infinite; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+    @keyframes slideIn { from { transform:translateX(100%); } to { transform:translateX(0); } }
+    .slide-in { animation: slideIn 0.3s ease-out forwards; }
+    @keyframes barGrow { from { width:0; } }
+    .bar-grow { animation: barGrow 0.8s ease-out forwards; }
+    @keyframes warmGlow { 0%,100% { box-shadow: 0 0 15px rgba(237,174,73,0.15); } 50% { box-shadow: 0 0 25px rgba(237,174,73,0.3); } }
+    .warm-glow { animation: warmGlow 3s ease-in-out infinite; }
+    @keyframes aiPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(237,174,73,0.4); } 50% { box-shadow: 0 0 0 12px rgba(237,174,73,0); } }
+    .ai-pulse { animation: aiPulse 2.5s ease-in-out infinite; }
+    @keyframes shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
+    .shimmer-bg { background:linear-gradient(90deg,transparent,rgba(255,217,125,0.08),transparent); background-size:200% 100%; animation:shimmer 3s infinite; }
+    @media (max-width: 768px) {
+      body { -webkit-text-size-adjust: 100%; }
+      button, [role="button"] { min-height: 36px; }
+      .warm-glow { animation: none; }
+      .ai-pulse { animation: none; }
+    }
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+    }
+    ::-webkit-scrollbar { width:6px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:rgba(237,174,73,0.3); border-radius:3px; }
+    .dark ::-webkit-scrollbar-thumb { background:rgba(237,174,73,0.3); }
+    .light ::-webkit-scrollbar-thumb { background:rgba(13,27,42,0.2); }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState, useEffect } = React;
+
+const App = () => {
+  const [dark, setDark] = useState(false);
+  const [screen, setScreen] = useState('dashboard');
+  const [chatOpen, setChatOpen] = useState(false);
+  const [cmdOpen, setCmdOpen] = useState(false);
+  const [sideExp, setSideExp] = useState(true);
+  const [selBill, setSelBill] = useState(null);
+  const [selLeg, setSelLeg] = useState(null);
+  const [selClient, setSelClient] = useState(null);
+  const [alertsOpen, setAlertsOpen] = useState(false);
+  const [mobileNav, setMobileNav] = useState(false);
+
+  // Theme classes
+  const t = dark ? {
+    bg:'bg-warm-950', bgCard:'bg-warm-900/80', bgCard2:'bg-warm-800/50',
+    border:'border-gold-500/10', text:'text-cream-100', textSub:'text-cream-300/70',
+    textMuted:'text-cream-400/40', input:'bg-warm-900 border-gold-500/15',
+    hover:'hover:bg-warm-800/70', hoverBorder:'hover:border-gold-500/25',
+    tableBg:'bg-warm-900/50', tableHover:'hover:bg-warm-800/40',
+  } : {
+    bg:'bg-cream-50', bgCard:'bg-white', bgCard2:'bg-cream-100/80',
+    border:'border-gold-500/15', text:'text-navy-900', textSub:'text-navy-600',
+    textMuted:'text-navy-600/50', input:'bg-white border-gold-500/20',
+    hover:'hover:bg-cream-100', hoverBorder:'hover:border-gold-400/40',
+    tableBg:'bg-white', tableHover:'hover:bg-cream-100',
+  };
+
+  // Shared components
+  const LvlBadge = ({level}) => {
+    const c = { FED:'bg-sky-500/20 text-sky-400', STATE:'bg-gold-500/20 text-gold-500', LOCAL:'bg-sage-500/20 text-sage-500', REG:'bg-violet-500/20 text-violet-400', SF:'bg-sage-500/20 text-sage-500' };
+    return <span className={`text-xs px-2 py-0.5 rounded-md font-semibold tracking-wide ${c[level]||'bg-gray-500/20 text-gray-400'}`}>{level}</span>;
+  };
+
+  const HealthDot = ({score}) => {
+    const c = score > 80 ? 'bg-sage-500' : score > 60 ? 'bg-gold-500' : 'bg-coral-500';
+    return <div className={`w-3 h-3 rounded-full ${c}`} title={`Health: ${score}`}></div>;
+  };
+
+  const ProgressBar = ({pct, color='bg-gold-500', h='h-2'}) => (
+    <div className={`${h} rounded-full ${dark?'bg-warm-800':'bg-cream-200'} overflow-hidden`}>
+      <div className={`${h} ${color} rounded-full bar-grow`} style={{width:`${pct}%`}}></div>
+    </div>
+  );
+
+  const MiniChart = ({data, color='#EDAE49', h=40}) => {
+    const max = Math.max(...data);
+    const min = Math.min(...data);
+    const range = max - min || 1;
+    const pts = data.map((v,i) => `${(i/(data.length-1))*100},${100-((v-min)/range)*80}`).join(' ');
+    return (
+      <svg viewBox="0 0 100 100" className="w-full" style={{height:h}} preserveAspectRatio="none">
+        <polyline fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" points={pts}/>
+        <polyline fill={`${color}20`} stroke="none" points={`0,100 ${pts} 100,100`}/>
+      </svg>
+    );
+  };
+
+  const BarChart = ({items}) => (
+    <div className="space-y-3">
+      {items.map((it,i) => (
+        <div key={i}>
+          <div className="flex justify-between text-sm mb-1">
+            <span className={t.textSub}>{it.label}</span>
+            <span className={`font-semibold ${t.text}`}>{it.value}</span>
+          </div>
+          <ProgressBar pct={it.pct} color={it.color||'bg-gold-500'} />
+        </div>
+      ))}
+    </div>
+  );
+
+  // ===================== DASHBOARD =====================
+  const Dashboard = () => (
+    <div className="space-y-6 fade-in">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>Good morning, Sarah</h1>
+          <p className={`${t.textSub} mt-1`}>Wednesday, March 8 · 7 new items since yesterday</p>
+        </div>
+        <div className="flex items-center gap-2 md:gap-3 overflow-x-auto">
+          <button onClick={()=>setChatOpen(true)} className="bg-gradient-to-r from-gold-500 via-ember-400 to-coral-400 text-navy-900 px-5 py-2.5 rounded-2xl font-semibold transition-all hover:shadow-lg hover:shadow-gold-500/20 hover:scale-105">✨ What should I focus on?</button>
+        </div>
+      </div>
+
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        {[
+          { label:'Bills Tracked', val:'82', delta:'+3', spark:[40,42,38,45,50,55,58,62,68,72,78,82], color:'text-gold-500' },
+          { label:'Urgent Items', val:'5', delta:'-2', spark:[12,10,8,9,7,6,8,5,6,5,4,5], color:'text-coral-500' },
+          { label:'Reports Ready', val:'3', delta:'+1', spark:[0,1,0,2,1,2,3,2,3,2,3,3], color:'text-sage-500' },
+          { label:'Win Rate', val:'73%', delta:'+5%', spark:[55,58,62,60,65,68,64,70,69,72,71,73], color:'text-violet-500' },
+        ].map((s,i) => (
+          <div key={i} className={`${t.bgCard} border ${t.border} rounded-2xl p-5 ${t.hover} transition-all cursor-pointer group`}>
+            <p className={`text-sm ${t.textSub}`}>{s.label}</p>
+            <div className="flex items-end justify-between mt-1">
+              <p className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>{s.val}</p>
+              <span className={`text-xs font-semibold ${s.color}`}>{s.delta}</span>
+            </div>
+            <div className="mt-3 opacity-60 group-hover:opacity-100 transition-opacity"><MiniChart data={s.spark} color={s.color.includes('gold')?'#EDAE49':s.color.includes('coral')?'#FF6B6B':s.color.includes('sage')?'#7CB892':'#8B5CF6'}/></div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="lg:col-span-2 space-y-4">
+          {/* Live Banner */}
+          <div className={`bg-gradient-to-r ${dark?'from-coral-500/15 via-ember-500/10 to-gold-500/10':'from-coral-500/10 via-ember-500/5 to-gold-500/5'} border border-coral-500/25 rounded-2xl p-4 flex items-center justify-between shimmer-bg`}>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-3 w-3"><span className="anim-ping absolute inline-flex h-full w-full rounded-full bg-coral-400 opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-coral-500"></span></span>
+                <span className="text-coral-500 font-semibold text-sm tracking-wide">LIVE</span>
+              </div>
+              <div>
+                <p className={`${t.text} font-semibold`}>Assembly Housing Committee</p>
+                <p className={`${t.textSub} text-sm`}>AB-1234 · 2 clients affected</p>
+              </div>
+            </div>
+            <button onClick={()=>setScreen('live')} className="bg-coral-500 hover:bg-coral-600 text-white px-5 py-2 rounded-xl text-sm font-semibold transition-colors">Watch →</button>
+          </div>
+
+          {/* New Bills */}
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl overflow-hidden`}>
+            <div className={`px-5 py-3 border-b ${t.border} flex items-center justify-between`}>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-gold-500 rounded-full"></span>
+                <span className={`font-semibold ${t.text}`}>New Since Yesterday</span>
+                <span className="bg-gold-500/20 text-gold-500 text-xs px-2 py-0.5 rounded-full font-semibold">7</span>
+              </div>
+              <button onClick={()=>setScreen('bills')} className={`${t.textSub} hover:text-gold-500 text-sm transition-colors`}>View all →</button>
+            </div>
+            <div className={`divide-y ${dark?'divide-navy-700/40':'divide-cream-200/60'}`}>
+              {[
+                { level:'STATE',id:'AB-2847',title:'Housing Density Bonus',match:98,client:'CA Housing Coalition' },
+                { level:'FED',id:'HR-8821',title:'Water Infrastructure Act',match:64,client:'Central Valley Water' },
+                { level:'REG',id:'OAL 2024-0312',title:'Housing Element Guidelines',match:71,client:'CA Housing Coalition' },
+                { level:'STATE',id:'SB-1492',title:'Transit-Oriented Development',match:87,client:'Tech Alliance CA' },
+              ].map((bill,i) => (
+                <div key={i} onClick={()=>{setSelBill(bill);setScreen('bills');}} className={`px-5 py-3.5 ${t.tableHover} transition-colors flex items-center gap-4 cursor-pointer`}>
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-sm font-bold ${bill.match>90?'bg-gradient-to-br from-gold-400 to-gold-500 text-navy-900':'bg-gradient-to-br from-navy-700 to-navy-800 text-cream-300'}`}>{bill.match}%</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <LvlBadge level={bill.level}/>
+                      <span className={`${t.text} font-semibold`}>{bill.id}</span>
+                      <span className={t.textMuted}>·</span>
+                      <span className={`${t.textSub} truncate`}>{bill.title}</span>
+                    </div>
+                    <p className={`text-sm ${t.textMuted} mt-0.5`}>Matches: {bill.client}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Today's Calendar */}
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+            <div className="flex items-center justify-between mb-4">
+              <span className={`font-semibold ${t.text}`}>Today's Schedule</span>
+              <button onClick={()=>setScreen('calendar')} className={`${t.textSub} hover:text-gold-500 text-sm transition-colors`}>Full Calendar →</button>
+            </div>
+            <div className="space-y-3">
+              {[
+                { time:'9:00 AM',title:'Assembly Housing Committee',type:'hearing',bills:3 },
+                { time:'1:30 PM',title:'Senate Floor Session',type:'floor',bills:12 },
+                { time:'3:00 PM',title:'Budget Subcommittee #4',type:'hearing',bills:2 },
+              ].map((item,i) => (
+                <div key={i} className={`flex items-center gap-4 p-3.5 ${t.bgCard2} rounded-xl ${t.hover} cursor-pointer transition-colors`}>
+                  <div className={`text-sm ${t.textSub} w-20 font-medium`}>{item.time}</div>
+                  <div className="flex-1">
+                    <p className={`${t.text} font-medium`}>{item.title}</p>
+                    <p className={`text-sm ${t.textMuted}`}>{item.bills} bills you track</p>
+                  </div>
+                  <span className={`text-xs px-2.5 py-1 rounded-lg font-semibold ${item.type==='hearing'?'bg-sky-500/20 text-sky-500':'bg-gold-500/20 text-gold-500'}`}>{item.type}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Client Health */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className={`font-semibold ${t.text}`}>Client Health</h2>
+            <button className="text-gold-500 hover:text-gold-400 text-sm font-semibold">+ New</button>
+          </div>
+          {[
+            { name:'CA Housing Coalition', bills:12, urgent:3, health:62, newSince:2, status:'ready', trend:[70,68,65,60,58,62] },
+            { name:'Tech Alliance CA', bills:8, urgent:1, health:85, newSince:1, status:'ready', trend:[75,78,80,82,84,85] },
+            { name:'Central Valley Water', bills:5, urgent:0, health:94, newSince:3, status:'draft', trend:[88,90,91,92,93,94] },
+          ].map((client,i) => (
+            <div key={i} onClick={()=>setSelClient(client)} className={`${t.bgCard} border ${t.border} rounded-2xl p-4 ${t.hoverBorder} transition-all cursor-pointer group`}>
+              <div className="flex items-center gap-3 mb-3">
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold text-white text-lg ${client.health>80?'bg-gradient-to-br from-sage-400 to-sage-600':client.health>60?'bg-gradient-to-br from-gold-400 to-gold-600':'bg-gradient-to-br from-coral-400 to-coral-600'}`}>{client.name.charAt(0)}</div>
+                <div className="flex-1">
+                  <h3 className={`font-semibold ${t.text}`}>{client.name}</h3>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <HealthDot score={client.health}/>
+                    <span className={`text-xs ${t.textMuted}`}>Health: {client.health}%</span>
+                  </div>
+                </div>
+                {client.status==='ready'&&<span className="bg-sage-500/20 text-sage-500 text-xs px-2 py-1 rounded-full font-semibold">Ready</span>}
+              </div>
+              <ProgressBar pct={client.health} color={client.health>80?'bg-sage-500':client.health>60?'bg-gold-500':'bg-coral-500'}/>
+              <div className="grid grid-cols-3 gap-2 mt-3">
+                <div className={`${t.bgCard2} rounded-lg p-2 text-center`}><p className={`text-lg font-bold ${t.text}`}>{client.bills}</p><p className={`text-xs ${t.textMuted}`}>Bills</p></div>
+                <div className={`rounded-lg p-2 text-center ${client.urgent>0?'bg-coral-500/15':''+t.bgCard2}`}><p className={`text-lg font-bold ${client.urgent>0?'text-coral-500':t.text}`}>{client.urgent}</p><p className={`text-xs ${t.textMuted}`}>Urgent</p></div>
+                <div className={`rounded-lg p-2 text-center ${client.newSince>0?'bg-gold-500/15':''+t.bgCard2}`}><p className={`text-lg font-bold ${client.newSince>0?'text-gold-500':t.text}`}>+{client.newSince}</p><p className={`text-xs ${t.textMuted}`}>New</p></div>
+              </div>
+              <div className="mt-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button className="flex-1 bg-gold-500 hover:bg-gold-600 text-navy-900 py-2 rounded-xl text-sm font-semibold transition-colors">Send</button>
+                <button className={`flex-1 ${dark?'bg-warm-800 hover:bg-navy-700':'bg-cream-200 hover:bg-cream-300'} ${t.text} py-2 rounded-xl text-sm font-semibold transition-colors`}>Preview</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===================== ALL BILLS =====================
+  const AllBills = () => (
+    <div className="space-y-6 fade-in">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>All Bills</h1>
+          <p className={`${t.textSub} mt-1`}>82 bills tracked across federal, state, and regulatory</p>
+        </div>
+        <button className="bg-gold-500 hover:bg-gold-600 text-navy-900 px-5 py-2.5 rounded-xl font-semibold transition-colors">+ Track Bill</button>
+      </div>
+      <div className="flex items-center gap-2 md:gap-3 overflow-x-auto pb-2">
+        <div className={`flex ${dark?'bg-warm-900':'bg-cream-200'} rounded-xl p-1`}>
+          {['All','Federal','State','Regulatory'].map((f,i)=>(
+            <button key={i} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${i===0?'bg-gold-500 text-navy-900':`${t.textSub} ${t.hover}`}`}>{f}</button>
+          ))}
+        </div>
+        <select className={`${t.input} rounded-xl px-4 py-2 text-sm ${t.text}`}><option>All Clients</option></select>
+        <select className={`${t.input} rounded-xl px-4 py-2 text-sm ${t.text}`}><option>All Positions</option><option>Support</option><option>Oppose</option><option>Watch</option></select>
+        <div className="flex-1"/>
+        <input type="text" placeholder="Search bills..." className={`${t.input} rounded-xl px-4 py-2 text-sm ${t.text} w-64 outline-none focus:border-gold-500`}/>
+      </div>
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl overflow-hidden`}>
+        <div className="overflow-x-auto"><table className="w-full min-w-[600px]">
+          <thead><tr className={`border-b ${t.border} text-left`}>
+            {['Bill','Title','Status','Client','Position','Passage Prob','Last Action'].map(h=>(
+              <th key={h} className={`px-5 py-3 text-sm font-semibold ${t.textSub}`}>{h}</th>
+            ))}
+          </tr></thead>
+          <tbody className={`divide-y ${dark?'divide-navy-700/40':'divide-cream-200/60'}`}>
+            {[
+              { level:'STATE',id:'AB-1234',title:'Affordable Housing Act',status:'Floor Vote',client:'CA Housing Coalition',position:'SUPPORT',prob:78,action:'Amended Mar 5' },
+              { level:'STATE',id:'AB-2847',title:'Housing Density Bonus',status:'Committee',client:'CA Housing Coalition',position:null,prob:45,action:'Introduced Mar 7' },
+              { level:'FED',id:'HR-8821',title:'Water Infrastructure Act',status:'Introduced',client:'Central Valley Water',position:'WATCH',prob:32,action:'Introduced Mar 6' },
+              { level:'REG',id:'OAL 2024-0312',title:'Housing Element Guidelines',status:'Comment Period',client:'CA Housing Coalition',position:'SUPPORT',prob:null,action:'Comments due Mar 20' },
+              { level:'STATE',id:'SB-567',title:'Housing Element Compliance',status:'Committee',client:'CA Housing Coalition',position:'SUPPORT',prob:65,action:'Hearing Mar 12' },
+              { level:'STATE',id:'SB-1492',title:'Transit-Oriented Development',status:'Committee',client:'Tech Alliance CA',position:'SUPPORT',prob:58,action:'Hearing Mar 14' },
+              { level:'FED',id:'S-4421',title:'Federal Housing Trust Fund',status:'Subcommittee',client:'CA Housing Coalition',position:'SUPPORT',prob:22,action:'Markup Mar 18' },
+            ].map((bill,i) => (
+              <tr key={i} onClick={()=>setSelBill(bill)} className={`${t.tableHover} cursor-pointer transition-colors`}>
+                <td className="px-5 py-4"><div className="flex items-center gap-2"><LvlBadge level={bill.level}/><span className={`${t.text} font-semibold`}>{bill.id}</span></div></td>
+                <td className={`px-5 py-4 ${t.textSub}`}>{bill.title}</td>
+                <td className={`px-5 py-4 ${t.textMuted} text-sm`}>{bill.status}</td>
+                <td className={`px-5 py-4 ${t.textMuted} text-sm`}>{bill.client||'-'}</td>
+                <td className="px-5 py-4">{bill.position?<span className={`text-xs px-2 py-1 rounded-lg font-semibold ${bill.position==='SUPPORT'?'bg-sage-500/20 text-sage-500':bill.position==='OPPOSE'?'bg-coral-500/20 text-coral-500':'bg-navy-700/50 text-cream-300'}`}>{bill.position}</span>:<button className="text-xs text-gold-500">Set position</button>}</td>
+                <td className="px-5 py-4">{bill.prob!==null?<div className="flex items-center gap-2"><div className={`w-16 h-1.5 rounded-full ${dark?'bg-warm-800':'bg-cream-200'} overflow-hidden`}><div className={`h-full rounded-full ${bill.prob>70?'bg-sage-500':bill.prob>40?'bg-gold-500':'bg-coral-500'}`} style={{width:`${bill.prob}%`}}/></div><span className={`text-xs font-semibold ${t.textSub}`}>{bill.prob}%</span></div>:'-'}</td>
+                <td className={`px-5 py-4 ${t.textMuted} text-sm`}>{bill.action}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  );
+
+  // ===================== BILL DETAIL =====================
+  const BillDetail = () => (
+    <div className="space-y-6 fade-in">
+      <button onClick={()=>setSelBill(null)} className={`${t.textSub} hover:text-gold-500 transition-colors flex items-center gap-2`}>← Back to Bills</button>
+      <div className={`bg-gradient-to-r ${dark?'from-gold-500/10 to-violet-500/10':'from-gold-500/5 to-violet-500/5'} border border-gold-500/20 rounded-2xl p-6`}>
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="flex items-center gap-3 mb-2"><LvlBadge level={selBill?.level||'STATE'}/><span className={t.textSub}>California Legislature</span></div>
+            <h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>{selBill?.id||'AB-1234'}</h1>
+            <p className={`text-xl ${t.textSub} mt-1`}>{selBill?.title||'Affordable Housing Act of 2026'}</p>
+          </div>
+          <div className="flex gap-2">
+            <button className={`${t.bgCard} border ${t.border} ${t.text} px-4 py-2 rounded-xl font-medium ${t.hover}`}>+ Add to Client</button>
+            <button className="bg-violet-500 hover:bg-violet-600 text-white px-4 py-2 rounded-xl font-medium">✨ Generate Summary</button>
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Progress */}
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-6`}>
+            <h2 className={`font-semibold ${t.text} mb-4`}>Legislative Progress</h2>
+            <div className="flex items-center justify-between">
+              {['Introduced','Committee','Floor Vote','Other House','Governor'].map((step,i)=>(
+                <div key={i} className="flex flex-col items-center flex-1">
+                  {i>0&&<div className={`absolute h-0.5 ${i<2?'bg-sage-500':dark?'bg-warm-800':'bg-cream-300'}`} style={{width:60}}/>}
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm ${i<2?'bg-sage-500 text-white':i===2?'bg-gold-500 text-navy-900 ring-4 ring-gold-500/30':dark?'bg-warm-800 text-warm-800/50':'bg-cream-200 text-cream-400'}`}>{i<2?'✓':i+1}</div>
+                  <p className={`mt-2 text-xs font-medium ${i===2?'text-gold-500':t.textMuted}`}>{step}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* AI Summary */}
+          <div className="bg-violet-500/10 border border-violet-500/20 rounded-2xl p-6">
+            <div className="flex items-center gap-2 mb-3"><span className="text-xl">✨</span><h2 className="font-semibold text-violet-400">AI Summary</h2></div>
+            <p className="text-violet-300 leading-relaxed">This bill requires cities over 100,000 population to zone for increased housing density near transit stations. Key provisions include streamlined permitting, density bonuses for 20%+ affordable units, and override of parking minimums within 0.5 miles of transit.</p>
+          </div>
+          {/* Passage Prediction */}
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-6`}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className={`font-semibold ${t.text}`}>Passage Probability</h2>
+              <span className="bg-violet-500/20 text-violet-400 text-xs px-2 py-1 rounded-lg font-semibold">AI Predicted</span>
+            </div>
+            <div className="flex items-center gap-6">
+              <div className="relative w-24 h-24">
+                <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                  <circle cx="18" cy="18" r="15.9" fill="none" stroke={dark?'#1E3A5F':'#FFF3E0'} strokeWidth="3"/>
+                  <circle cx="18" cy="18" r="15.9" fill="none" stroke="#EDAE49" strokeWidth="3" strokeDasharray="78 22" strokeLinecap="round"/>
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center"><span className={`text-2xl font-display font-bold ${t.text}`}>78%</span></div>
+              </div>
+              <div className="flex-1">
+                <MiniChart data={[45,50,55,60,58,65,70,72,75,78]} color="#EDAE49" h={50}/>
+                <p className={`text-xs ${t.textMuted} mt-1`}>Trend over last 30 days</p>
+              </div>
+            </div>
+          </div>
+          {/* Position Notes */}
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-6`}>
+            <h2 className={`font-semibold ${t.text} mb-4`}>Position Notes by Client</h2>
+            <div className="space-y-4">
+              <div className="p-4 bg-sage-500/10 border border-sage-500/20 rounded-xl">
+                <div className="flex items-center justify-between mb-2"><span className={`font-medium ${t.text}`}>CA Housing Coalition</span><span className="bg-sage-500 text-white text-xs px-2 py-1 rounded font-semibold">SUPPORT</span></div>
+                <p className={`${t.textSub} text-sm`}>Strong support - aligns with our density agenda. Key win for coalition members in transit-rich areas. Prepared testimony for Mar 12 hearing.</p>
+                <p className={`${t.textMuted} text-xs mt-2`}>Last updated by Sarah Chen · Mar 5, 2026</p>
+              </div>
+              <div className="p-4 bg-coral-500/10 border border-coral-500/20 rounded-xl">
+                <div className="flex items-center justify-between mb-2"><span className={`font-medium ${t.text}`}>Bay Area Builders</span><span className="bg-coral-500 text-white text-xs px-2 py-1 rounded font-semibold">OPPOSE</span></div>
+                <p className={`${t.textSub} text-sm`}>Concerns about parking elimination and density requirements. Working on amendments to address member concerns.</p>
+                <p className={`${t.textMuted} text-xs mt-2`}>Last updated by Sarah Chen · Mar 3, 2026</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Right sidebar */}
+        <div className="space-y-6">
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+            <h2 className={`font-semibold ${t.text} mb-4`}>Author</h2>
+            <div onClick={()=>{setSelLeg({name:'Jane Smith'});setScreen('legislators');}} className={`flex items-center gap-3 p-3 ${t.bgCard2} rounded-xl ${t.hover} cursor-pointer transition-colors`}>
+              <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold">JS</div>
+              <div><p className={`${t.text} font-medium`}>Asm. Jane Smith</p><p className={`${t.textSub} text-sm`}>D - District 42</p></div>
+            </div>
+          </div>
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+            <h2 className={`font-semibold ${t.text} mb-4`}>Key Info</h2>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between"><span className={t.textMuted}>Committee</span><span className={t.text}>Housing & CD</span></div>
+              <div className="flex justify-between"><span className={t.textMuted}>Next Action</span><span className="text-gold-500 font-medium">Floor vote Mar 12</span></div>
+              <div className="flex justify-between"><span className={t.textMuted}>Co-authors</span><span className={t.text}>12 members</span></div>
+              <div className="flex justify-between"><span className={t.textMuted}>Fiscal Impact</span><span className="text-coral-500 font-medium">$2.1B</span></div>
+            </div>
+          </div>
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+            <h2 className={`font-semibold ${t.text} mb-4`}>Vote Count</h2>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between"><span className={`text-sm ${t.textSub}`}>Aye</span><span className="text-sage-500 font-bold">28</span></div>
+              <ProgressBar pct={70} color="bg-sage-500"/>
+              <div className="flex items-center justify-between mt-2"><span className={`text-sm ${t.textSub}`}>Nay</span><span className="text-coral-500 font-bold">12</span></div>
+              <ProgressBar pct={30} color="bg-coral-500"/>
+              <p className={`text-xs ${t.textMuted} mt-2`}>Need 41 for passage · 13 undecided</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===================== CALENDAR =====================
+  const CalendarScreen = () => (
+    <div className="space-y-6 fade-in">
+      <div className="flex items-center justify-between">
+        <div><h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>Calendar</h1><p className={`${t.textSub} mt-1`}>Hearings, floor sessions, and deadlines</p></div>
+        <div className="flex items-center gap-2">
+          <button className={`${t.bgCard} border ${t.border} ${t.text} px-4 py-2 rounded-xl font-medium ${t.hover}`}>← Prev</button>
+          <span className={`${t.text} font-semibold px-4`}>March 2026</span>
+          <button className={`${t.bgCard} border ${t.border} ${t.text} px-4 py-2 rounded-xl font-medium ${t.hover}`}>Next →</button>
+        </div>
+      </div>
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl overflow-hidden`}>
+        <div className={`grid grid-cols-7 border-b ${t.border}`}>
+          {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d,i)=>(
+            <div key={i} className={`px-4 py-3 text-center text-sm font-semibold ${t.textSub} border-r ${t.border} last:border-r-0`}>{d}</div>
+          ))}
+        </div>
+        <div className="grid grid-cols-7">
+          {[8,9,10,11,12,13,14].map((date,i)=>(
+            <div key={i} className={`min-h-32 p-2 border-r border-b ${t.border} last:border-r-0 ${i===3?'bg-gold-500/10':''}`}>
+              <p className={`text-sm font-semibold mb-2 ${i===3?'text-gold-500':t.textMuted}`}>{date}</p>
+              {i===3&&<div className="space-y-1"><div className="p-1.5 bg-sky-500/20 rounded text-xs text-sky-500 truncate font-medium">9:00 Housing Cmte</div><div className="p-1.5 bg-gold-500/20 rounded text-xs text-gold-500 truncate font-medium">1:30 Floor Session</div><div className="p-1.5 bg-violet-500/20 rounded text-xs text-violet-400 truncate font-medium">3:00 Budget Sub</div></div>}
+              {i===4&&<div className="space-y-1"><div className="p-1.5 bg-sky-500/20 rounded text-xs text-sky-500 truncate font-medium">10:00 Judiciary</div></div>}
+              {i===5&&<div className="space-y-1"><div className="p-1.5 bg-coral-500/20 rounded text-xs text-coral-500 truncate font-medium">AB-1234 Deadline</div></div>}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+          <h2 className={`font-semibold ${t.text} mb-4`}>Today's Hearings</h2>
+          <div className="space-y-3">
+            {[
+              { time:'9:00 AM',committee:'Assembly Housing Committee',room:'Room 4202',bills:['AB-1234','AB-567','AB-890'] },
+              { time:'1:30 PM',committee:'Senate Floor Session',room:'Senate Chamber',bills:['SB-123','SB-456','SB-789'] },
+            ].map((h,i)=>(
+              <div key={i} className={`p-4 ${t.bgCard2} rounded-xl`}>
+                <div className="flex items-center justify-between mb-2"><span className={`${t.text} font-medium`}>{h.committee}</span><span className={`${t.textSub} text-sm`}>{h.time}</span></div>
+                <p className={`${t.textMuted} text-sm mb-2`}>{h.room}</p>
+                <div className="flex flex-wrap gap-1">{h.bills.map((b,j)=>(<span key={j} className={`${dark?'bg-warm-800 text-cream-300':'bg-cream-200 text-navy-700'} text-xs px-2 py-1 rounded-lg font-medium`}>{b}</span>))}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+          <h2 className={`font-semibold ${t.text} mb-4`}>Upcoming Deadlines</h2>
+          <div className="space-y-3">
+            {[
+              { date:'Mar 13',title:'FPPC Q1 Filing',type:'fppc',days:5 },
+              { date:'Mar 15',title:'AB-1234 Comment Period',type:'comment',days:7 },
+              { date:'Mar 20',title:'OAL Housing Guidelines',type:'regulatory',days:12 },
+              { date:'Mar 31',title:'Bill Introduction Deadline',type:'legislative',days:23 },
+            ].map((d,i)=>(
+              <div key={i} className={`flex items-center gap-4 p-3.5 ${t.bgCard2} rounded-xl`}>
+                <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center ${d.days<=7?'bg-coral-500/20':'bg-gold-500/20'}`}>
+                  <span className={`font-bold ${d.days<=7?'text-coral-500':'text-gold-500'}`}>{d.days}</span>
+                  <span className={`text-[10px] ${t.textMuted}`}>days</span>
+                </div>
+                <div className="flex-1"><p className={`${t.text} font-medium`}>{d.title}</p><p className={`text-sm ${t.textMuted}`}>{d.date}</p></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===================== LEGISLATORS =====================
+  const Legislators = () => (
+    <div className="space-y-6 fade-in">
+      <div className="flex items-center justify-between">
+        <div><h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>Legislators</h1><p className={`${t.textSub} mt-1`}>California and Federal elected officials</p></div>
+        <div className={`flex ${dark?'bg-warm-900':'bg-cream-200'} rounded-xl p-1`}>
+          {['CA Assembly','CA Senate','US House','US Senate'].map((f,i)=>(
+            <button key={i} className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${i===0?'bg-gold-500 text-navy-900':`${t.textSub} ${t.hover}`}`}>{f}</button>
+          ))}
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[
+          { name:'Jane Smith',party:'D',district:'AD-42',role:'Chair, Housing Committee',bills:12,score:92 },
+          { name:'Robert Johnson',party:'R',district:'AD-15',role:'Vice Chair, Budget',bills:8,score:45 },
+          { name:'Maria Garcia',party:'D',district:'AD-28',role:'Member, Transportation',bills:5,score:78 },
+          { name:'Michael Lee',party:'D',district:'SD-11',role:'Chair, Judiciary',bills:15,score:85 },
+          { name:'Sarah Williams',party:'R',district:'SD-08',role:'Member, Education',bills:6,score:30 },
+          { name:'David Chen',party:'D',district:'AD-19',role:'Speaker Pro Tem',bills:22,score:95 },
+        ].map((leg,i)=>(
+          <div key={i} onClick={()=>setSelLeg(leg)} className={`${t.bgCard} border ${t.border} rounded-2xl p-5 ${t.hoverBorder} cursor-pointer transition-all`}>
+            <div className="flex items-center gap-4 mb-4">
+              <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg ${leg.party==='D'?'bg-sky-500':'bg-coral-500'}`}>{leg.name.split(' ').map(n=>n[0]).join('')}</div>
+              <div><h3 className={`${t.text} font-semibold`}>{leg.name}</h3><p className={`${t.textSub} text-sm`}>{leg.party} - {leg.district}</p></div>
+            </div>
+            <p className={`${t.textSub} text-sm mb-3`}>{leg.role}</p>
+            <div className="flex items-center justify-between text-sm mb-2">
+              <span className={t.textMuted}>Alignment Score</span>
+              <span className={`font-bold ${leg.score>70?'text-sage-500':leg.score>40?'text-gold-500':'text-coral-500'}`}>{leg.score}%</span>
+            </div>
+            <ProgressBar pct={leg.score} color={leg.score>70?'bg-sage-500':leg.score>40?'bg-gold-500':'bg-coral-500'}/>
+            <div className="flex items-center justify-between text-sm mt-3">
+              <span className={t.textMuted}>{leg.bills} bills you track</span>
+              <span className="text-gold-500 font-medium">View →</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // ===================== LEGISLATOR DETAIL =====================
+  const LegislatorDetail = () => (
+    <div className="space-y-6 fade-in">
+      <button onClick={()=>setSelLeg(null)} className={`${t.textSub} hover:text-gold-500 transition-colors flex items-center gap-2`}>← Back to Legislators</button>
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl p-6`}>
+        <div className="flex items-start gap-6">
+          <div className="w-24 h-24 bg-sky-500 rounded-2xl flex items-center justify-center text-white font-bold text-3xl">JS</div>
+          <div className="flex-1">
+            <h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>Assemblymember Jane Smith</h1>
+            <p className={`${t.textSub} mt-1`}>Democrat - District 42 (Los Angeles County)</p>
+            <div className="flex items-center gap-3 mt-4">
+              <span className="bg-sky-500/20 text-sky-500 text-sm px-3 py-1 rounded-full font-medium">Chair, Housing Committee</span>
+              <span className={`${dark?'bg-warm-800 text-cream-300':'bg-cream-200 text-navy-700'} text-sm px-3 py-1 rounded-full`}>Elected 2020</span>
+            </div>
+          </div>
+          <button className="bg-gold-500 hover:bg-gold-600 text-navy-900 px-4 py-2 rounded-xl font-medium transition-colors">Contact</button>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-6`}>
+            <h2 className={`font-semibold ${t.text} mb-4`}>Voting Record on Your Bills</h2>
+            <div className="space-y-3">
+              {[
+                { bill:'AB-1234',title:'Affordable Housing Act',vote:'AYE',date:'Feb 28' },
+                { bill:'SB-567',title:'Housing Element',vote:'AYE',date:'Feb 15' },
+                { bill:'AB-890',title:'Zoning Reform',vote:'NO',date:'Jan 30' },
+                { bill:'AB-445',title:'Tenant Protections',vote:'AYE',date:'Jan 15' },
+              ].map((v,i)=>(
+                <div key={i} className={`flex items-center justify-between p-3.5 ${t.bgCard2} rounded-xl`}>
+                  <div><span className={`${t.text} font-medium`}>{v.bill}</span><span className={t.textMuted}> · </span><span className={t.textSub}>{v.title}</span></div>
+                  <div className="flex items-center gap-2 md:gap-3 overflow-x-auto"><span className={`${t.textMuted} text-sm`}>{v.date}</span><span className={`text-xs px-2.5 py-1 rounded-lg font-semibold ${v.vote==='AYE'?'bg-sage-500/20 text-sage-500':'bg-coral-500/20 text-coral-500'}`}>{v.vote}</span></div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-6`}>
+            <h2 className={`font-semibold ${t.text} mb-4`}>Alignment Over Time</h2>
+            <MiniChart data={[60,65,70,72,75,80,85,88,90,92]} color="#7CB892" h={80}/>
+            <p className={`text-xs ${t.textMuted} mt-2`}>92% alignment score (last 12 months)</p>
+          </div>
+        </div>
+        <div className="space-y-6">
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+            <h2 className={`font-semibold ${t.text} mb-4`}>Contact Info</h2>
+            <div className="space-y-3 text-sm">
+              <div><p className={t.textMuted}>Capitol Office</p><p className={t.text}>State Capitol, Room 2136</p></div>
+              <div><p className={t.textMuted}>Phone</p><p className={t.text}>(916) 555-0142</p></div>
+              <div><p className={t.textMuted}>Email</p><p className="text-gold-500">asm.smith@assembly.ca.gov</p></div>
+            </div>
+          </div>
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+            <h2 className={`font-semibold ${t.text} mb-4`}>Staff</h2>
+            <div className="space-y-2">
+              {['Tom Davis - Chief of Staff','Maria Lopez - Legislative Dir','James Wu - Policy Analyst'].map((s,i)=>(
+                <div key={i} className={`p-2.5 ${t.bgCard2} rounded-lg text-sm ${t.textSub}`}>{s}</div>
+              ))}
+            </div>
+          </div>
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+            <h2 className={`font-semibold ${t.text} mb-4`}>Committees</h2>
+            <div className="space-y-2">
+              {['Housing & Community Dev (Chair)','Budget Subcommittee #4','Local Government'].map((c,i)=>(
+                <div key={i} className={`p-2.5 ${t.bgCard2} rounded-lg text-sm ${t.textSub}`}>{c}</div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===================== LIVE HEARINGS =====================
+  const LiveHearings = () => (
+    <div className="space-y-6 fade-in">
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-3 w-3"><span className="anim-ping absolute inline-flex h-full w-full rounded-full bg-coral-400 opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-coral-500"></span></span>
+          <span className="text-coral-500 font-semibold tracking-wide">LIVE NOW</span>
+        </div>
+        <h1 className={`text-2xl font-display font-bold ${t.text}`}>Assembly Housing Committee</h1>
+        <span className={t.textMuted}>· 42 watching</span>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className={`col-span-2 ${t.bgCard} border ${t.border} rounded-2xl overflow-hidden`}>
+          <div className={`p-4 border-b ${t.border} flex items-center gap-2`}>
+            <span className={`${t.text} font-semibold`}>Live Transcript</span>
+            <span className="bg-violet-500/20 text-violet-400 text-xs px-2 py-1 rounded-full font-medium">AI Enhanced</span>
+          </div>
+          <div className="p-4 h-96 overflow-y-auto space-y-4">
+            {[
+              { speaker:'CHAIR SMITH',text:"We'll now hear testimony on AB-1234. The author has 5 minutes.",time:'10:23' },
+              { speaker:'ASM. GARCIA',role:'Author',text:"Thank you, Madam Chair. This bill addresses the critical shortage of housing near transit...",time:'10:24' },
+              { speaker:'MARIA CHEN',org:'CA Housing Coalition',text:"We strongly support this bill. Our analysis shows it would create 50,000 units statewide.",time:'10:28',highlight:true },
+              { speaker:'CHAIR SMITH',text:"Can you address concerns about local control?",time:'10:30' },
+              { speaker:'MARK JOHNSON',org:'Bay Area Builders',text:"We have concerns about the density requirements. Our members report 30% cost increases with these mandates.",time:'10:33',highlight:true,oppose:true },
+              { speaker:'ASM. LEE',text:"I'd like to ask about the fiscal impact. What does the LAO say?",time:'10:37' },
+            ].map((msg,i)=>(
+              <div key={i} className={`p-4 rounded-xl ${msg.highlight?(msg.oppose?'bg-coral-500/10 border border-coral-500/30':'bg-gold-500/10 border border-gold-500/30'):t.bgCard2}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className={`font-semibold ${t.text}`}>{msg.speaker}</span>
+                    {msg.org&&<span className="bg-violet-500/20 text-violet-400 text-xs px-2 py-0.5 rounded font-medium">{msg.org}</span>}
+                    {msg.role&&<span className="bg-sky-500/20 text-sky-500 text-xs px-2 py-0.5 rounded font-medium">{msg.role}</span>}
+                  </div>
+                  <span className={`text-xs ${t.textMuted}`}>{msg.time} AM</span>
+                </div>
+                <p className={`${t.textSub} text-sm leading-relaxed`}>{msg.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-4">
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+            <h3 className={`font-semibold ${t.text} mb-3`}>Bills on Agenda</h3>
+            <div className="space-y-2">
+              {[{id:'AB-1234',title:'Affordable Housing Act',status:'Testifying'},{id:'AB-567',title:'Housing Element',status:'Up Next'},{id:'AB-890',title:'Zoning Reform',status:'Pending'}].map((b,i)=>(
+                <div key={i} className={`p-3 ${t.bgCard2} rounded-xl flex items-center justify-between`}>
+                  <div><p className={`${t.text} font-medium text-sm`}>{b.id}</p><p className={`${t.textMuted} text-xs`}>{b.title}</p></div>
+                  <span className={`text-xs px-2 py-1 rounded-lg font-semibold ${b.status==='Testifying'?'bg-coral-500/20 text-coral-500':b.status==='Up Next'?'bg-gold-500/20 text-gold-500':'bg-navy-700/50 text-cream-400'}`}>{b.status}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+            <h3 className={`font-semibold ${t.text} mb-3`}>AI Key Moments</h3>
+            <div className="space-y-3">
+              {[
+                {time:'10:28',note:'Coalition testified in support with economic data',type:'support'},
+                {time:'10:33',note:'Industry opposition citing cost concerns',type:'oppose'},
+              ].map((m,i)=>(
+                <div key={i} className="flex gap-3">
+                  <span className={`text-xs font-mono ${t.textMuted} w-12`}>{m.time}</span>
+                  <div className={`flex-1 text-sm ${t.textSub}`}>
+                    <span className={`inline-block w-2 h-2 rounded-full mr-2 ${m.type==='support'?'bg-sage-500':'bg-coral-500'}`}/>
+                    {m.note}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+            <h3 className={`font-semibold ${t.text} mb-3`}>Your Clients Affected</h3>
+            <div className="space-y-2">
+              {['CA Housing Coalition','Bay Area Builders'].map((c,i)=>(
+                <div key={i} className={`p-3 ${t.bgCard2} rounded-xl flex items-center gap-3`}>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm ${i===0?'bg-sage-500':'bg-coral-500'}`}>{c[0]}</div>
+                  <span className={`${t.text} text-sm font-medium`}>{c}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===================== CLIENTS =====================
+  const Clients = () => (
+    <div className="space-y-6 fade-in">
+      <div className="flex items-center justify-between">
+        <div><h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>Clients</h1><p className={`${t.textSub} mt-1`}>4 active clients · $248K MRR</p></div>
+        <button className="bg-gold-500 hover:bg-gold-600 text-navy-900 px-5 py-2.5 rounded-xl font-semibold transition-colors">+ Add Client</button>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        {[
+          { name:'CA Housing Coalition',bills:12,urgent:3,health:62,mrr:'$85K',type:'Trade Association',contacts:8,lastReport:'Mar 1',trend:[70,68,65,60,58,62] },
+          { name:'Tech Alliance CA',bills:8,urgent:1,health:85,mrr:'$65K',type:'Industry Group',contacts:5,lastReport:'Mar 3',trend:[75,78,80,82,84,85] },
+          { name:'Central Valley Water',bills:5,urgent:0,health:94,mrr:'$55K',type:'Municipal',contacts:4,lastReport:'Feb 28',trend:[88,90,91,92,93,94] },
+          { name:'Bay Area Builders',bills:6,urgent:2,health:48,mrr:'$43K',type:'Trade Association',contacts:6,lastReport:'Feb 25',trend:[65,60,55,52,50,48] },
+        ].map((c,i) => (
+          <div key={i} onClick={()=>setSelClient(c)} className={`${t.bgCard} border ${t.border} rounded-2xl p-6 ${t.hoverBorder} cursor-pointer transition-all group`}>
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-white text-xl ${c.health>80?'bg-gradient-to-br from-sage-400 to-sage-600':c.health>60?'bg-gradient-to-br from-gold-400 to-gold-600':'bg-gradient-to-br from-coral-400 to-coral-600'}`}>{c.name.charAt(0)}</div>
+                <div>
+                  <h3 className={`${t.text} font-semibold text-lg`}>{c.name}</h3>
+                  <p className={`${t.textMuted} text-sm`}>{c.type} · {c.mrr}/mo</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="flex items-center gap-2"><HealthDot score={c.health}/><span className={`font-bold text-lg ${c.health>80?'text-sage-500':c.health>60?'text-gold-500':'text-coral-500'}`}>{c.health}%</span></div>
+                <p className={`text-xs ${t.textMuted}`}>health</p>
+              </div>
+            </div>
+            <ProgressBar pct={c.health} color={c.health>80?'bg-sage-500':c.health>60?'bg-gold-500':'bg-coral-500'}/>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mt-4">
+              <div className={`${t.bgCard2} rounded-lg p-2 text-center`}><p className={`text-lg font-bold ${t.text}`}>{c.bills}</p><p className={`text-xs ${t.textMuted}`}>Bills</p></div>
+              <div className={`rounded-lg p-2 text-center ${c.urgent>0?'bg-coral-500/15':t.bgCard2}`}><p className={`text-lg font-bold ${c.urgent>0?'text-coral-500':t.text}`}>{c.urgent}</p><p className={`text-xs ${t.textMuted}`}>Urgent</p></div>
+              <div className={`${t.bgCard2} rounded-lg p-2 text-center`}><p className={`text-lg font-bold ${t.text}`}>{c.contacts}</p><p className={`text-xs ${t.textMuted}`}>Contacts</p></div>
+              <div className={`${t.bgCard2} rounded-lg p-2 text-center`}><p className={`text-sm font-bold ${t.text}`}>{c.lastReport}</p><p className={`text-xs ${t.textMuted}`}>Last Rpt</p></div>
+            </div>
+            <div className="mt-3"><MiniChart data={c.trend} color={c.health>80?'#7CB892':c.health>60?'#EDAE49':'#FF6B6B'} h={30}/></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // ===================== CRM =====================
+  const CRM = () => (
+    <div className="space-y-6 fade-in">
+      <div className="flex items-center justify-between">
+        <div><h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>Stakeholder CRM</h1><p className={`${t.textSub} mt-1`}>Contacts across legislative, regulatory, and advocacy</p></div>
+        <button className="bg-gold-500 hover:bg-gold-600 text-navy-900 px-5 py-2.5 rounded-xl font-semibold transition-colors">+ Add Contact</button>
+      </div>
+      <div className="flex items-center gap-2 md:gap-3 overflow-x-auto">
+        <div className={`flex ${dark?'bg-warm-900':'bg-cream-200'} rounded-xl p-1`}>
+          {['All','Legislative Staff','Lobbyists','Regulators','Advocates'].map((f,i)=>(
+            <button key={i} className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${i===0?'bg-gold-500 text-navy-900':`${t.textSub} ${t.hover}`}`}>{f}</button>
+          ))}
+        </div>
+        <div className="flex-1"/>
+        <input type="text" placeholder="Search contacts..." className={`${t.input} rounded-xl px-4 py-2 text-sm ${t.text} w-64 outline-none focus:border-gold-500`}/>
+      </div>
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl overflow-hidden`}>
+        <div className="overflow-x-auto"><table className="w-full min-w-[600px]">
+          <thead><tr className={`border-b ${t.border} text-left`}>
+            {['Name','Organization','Role','Bills Connected','Relationship','Last Contact'].map(h=>(
+              <th key={h} className={`px-5 py-3 text-sm font-semibold ${t.textSub}`}>{h}</th>
+            ))}
+          </tr></thead>
+          <tbody className={`divide-y ${dark?'divide-navy-700/40':'divide-cream-200/60'}`}>
+            {[
+              { name:'Maria Chen',org:'CA Housing Coalition',role:'Executive Director',bills:8,rel:'Champion',last:'Today' },
+              { name:'Tom Davis',org:'Asm. Smith Office',role:'Chief of Staff',bills:12,rel:'Ally',last:'Yesterday' },
+              { name:'Sarah Lin',org:'HCD',role:'Policy Analyst',bills:3,rel:'Neutral',last:'Mar 3' },
+              { name:'Mark Johnson',org:'Bay Area Builders',role:'VP of Policy',bills:6,rel:'Opponent',last:'Mar 1' },
+              { name:'James Wu',org:'Tech Alliance CA',role:'Government Affairs',bills:5,rel:'Ally',last:'Feb 28' },
+              { name:'Linda Park',org:'Senate Budget Cmte',role:'Consultant',bills:4,rel:'Ally',last:'Feb 25' },
+            ].map((c,i)=>(
+              <tr key={i} className={`${t.tableHover} cursor-pointer transition-colors`}>
+                <td className="px-5 py-4"><div className="flex items-center gap-2 md:gap-3 overflow-x-auto"><div className={`w-10 h-10 ${dark?'bg-warm-800':'bg-cream-200'} rounded-full flex items-center justify-center ${t.text} font-medium`}>{c.name.split(' ').map(n=>n[0]).join('')}</div><span className={`${t.text} font-medium`}>{c.name}</span></div></td>
+                <td className={`px-5 py-4 ${t.textSub}`}>{c.org}</td>
+                <td className={`px-5 py-4 ${t.textMuted} text-sm`}>{c.role}</td>
+                <td className={`px-5 py-4 ${t.textMuted} text-sm`}>{c.bills} bills</td>
+                <td className="px-5 py-4"><span className={`text-xs px-2 py-1 rounded-lg font-semibold ${c.rel==='Champion'?'bg-sage-500/20 text-sage-500':c.rel==='Ally'?'bg-sky-500/20 text-sky-500':c.rel==='Opponent'?'bg-coral-500/20 text-coral-500':'bg-gold-500/20 text-gold-500'}`}>{c.rel}</span></td>
+                <td className={`px-5 py-4 ${t.textMuted} text-sm`}>{c.last}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  );
+
+  // ===================== REGULATORY =====================
+  const Regulatory = () => (
+    <div className="space-y-6 fade-in">
+      <div className="flex items-center justify-between">
+        <div><h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>Regulatory Tracking</h1><p className={`${t.textSub} mt-1`}>CA OAL, Federal Register, and agency rulemakings</p></div>
+        <button className="bg-gold-500 hover:bg-gold-600 text-navy-900 px-5 py-2.5 rounded-xl font-semibold">+ Track Regulation</button>
+      </div>
+      <div className="flex items-center gap-2 md:gap-3 overflow-x-auto">
+        <div className={`flex ${dark?'bg-warm-900':'bg-cream-200'} rounded-xl p-1`}>
+          {['All','CA OAL','Federal Register','Regulations.gov'].map((f,i)=>(
+            <button key={i} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${i===0?'bg-gold-500 text-navy-900':`${t.textSub} ${t.hover}`}`}>{f}</button>
+          ))}
+        </div>
+      </div>
+      <div className={`bg-gradient-to-r ${dark?'from-gold-500/15 to-coral-500/10':'from-gold-500/10 to-coral-500/5'} border border-gold-500/20 rounded-2xl p-5`}>
+        <h2 className="font-semibold text-gold-500 mb-4">Comment Deadlines</h2>
+        <div className="space-y-3">
+          {[
+            { title:'Housing Element Guidelines',agency:'CA HCD',deadline:'Mar 20',days:12,pct:40 },
+            { title:'Clean Air Standards Update',agency:'CARB',deadline:'Mar 25',days:17,pct:20 },
+            { title:'Fair Housing Rule Amendments',agency:'HUD',deadline:'Apr 5',days:28,pct:10 },
+          ].map((item,i)=>(
+            <div key={i} className={`flex items-center justify-between p-4 ${t.bgCard} rounded-xl`}>
+              <div className="flex-1">
+                <p className={`${t.text} font-medium`}>{item.title}</p>
+                <p className={`${t.textMuted} text-sm`}>{item.agency} · Due {item.deadline}</p>
+                <div className="mt-2 flex items-center gap-2">
+                  <span className={`text-xs ${t.textMuted}`}>Draft progress:</span>
+                  <div className="flex-1 max-w-32"><ProgressBar pct={item.pct} color="bg-violet-500" h="h-1.5"/></div>
+                  <span className="text-xs text-violet-400 font-medium">{item.pct}%</span>
+                </div>
+              </div>
+              <div className={`w-14 h-14 rounded-xl flex flex-col items-center justify-center ${item.days<=14?'bg-coral-500/20':'bg-gold-500/20'}`}>
+                <span className={`text-xl font-bold ${item.days<=14?'text-coral-500':'text-gold-500'}`}>{item.days}</span>
+                <span className={`text-[10px] ${t.textMuted}`}>days</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl overflow-hidden`}>
+        <div className={`px-5 py-3 border-b ${t.border}`}><h2 className={`font-semibold ${t.text}`}>Active Rulemakings</h2></div>
+        <div className={`divide-y ${dark?'divide-navy-700/40':'divide-cream-200/60'}`}>
+          {[
+            { id:'OAL 2024-0312',title:'Housing Element Guidelines Update',agency:'HCD',status:'Comment Period',client:'CA Housing Coalition' },
+            { id:'FR 2024-04521',title:'Fair Housing Rule Amendments',agency:'HUD',status:'Proposed Rule',client:'CA Housing Coalition' },
+            { id:'OAL 2024-0298',title:'Building Standards - Electrification',agency:'CEC',status:'Final Review',client:'Tech Alliance CA' },
+          ].map((reg,i)=>(
+            <div key={i} className={`px-5 py-4 ${t.tableHover} cursor-pointer transition-colors`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 md:gap-3 overflow-x-auto"><LvlBadge level="REG"/><span className={`${t.text} font-medium`}>{reg.id}</span><span className={t.textMuted}>·</span><span className={t.textSub}>{reg.title}</span></div>
+                <span className={`text-xs px-2 py-1 rounded-lg font-semibold ${reg.status==='Comment Period'?'bg-gold-500/20 text-gold-500':reg.status==='Proposed Rule'?'bg-sky-500/20 text-sky-500':'bg-sage-500/20 text-sage-500'}`}>{reg.status}</span>
+              </div>
+              <div className="flex items-center gap-4 mt-2 text-sm"><span className={t.textMuted}>Agency: {reg.agency}</span><span className={t.textMuted}>Client: {reg.client}</span></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===================== ALERTS =====================
+  const Alerts = () => (
+    <div className="space-y-6 fade-in">
+      <div className="flex items-center justify-between">
+        <div><h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>Alerts</h1><p className={`${t.textSub} mt-1`}>Real-time notifications and digest settings</p></div>
+        <button className="bg-gold-500 hover:bg-gold-600 text-navy-900 px-5 py-2.5 rounded-xl font-semibold">+ New Alert Rule</button>
+      </div>
+      {/* Recent alerts */}
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+        <h2 className={`font-semibold ${t.text} mb-4`}>Recent Alerts</h2>
+        <div className="space-y-3">
+          {[
+            { text:'AB-1234 amended in committee',time:'2h ago',type:'amendment',read:false },
+            { text:'Hearing scheduled: AB-567 Mar 15',time:'4h ago',type:'hearing',read:false },
+            { text:'SB-890 passed Senate floor',time:'1d ago',type:'vote',read:true },
+            { text:'OAL comment period opens for Housing Guidelines',time:'1d ago',type:'regulatory',read:true },
+            { text:'New bill matches CA Housing Coalition: AB-2847',time:'2d ago',type:'match',read:true },
+          ].map((a,i)=>(
+            <div key={i} className={`flex items-center gap-4 p-4 ${!a.read?`bg-gold-500/10 border border-gold-500/20`:t.bgCard2} rounded-xl transition-colors`}>
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${a.type==='amendment'?'bg-gold-500/20':a.type==='hearing'?'bg-sky-500/20':a.type==='vote'?'bg-sage-500/20':a.type==='regulatory'?'bg-violet-500/20':'bg-coral-500/20'}`}>
+                <span>{a.type==='amendment'?'📝':a.type==='hearing'?'🏛️':a.type==='vote'?'✅':a.type==='regulatory'?'📜':'🔔'}</span>
+              </div>
+              <div className="flex-1"><p className={`${t.text} ${!a.read?'font-semibold':'font-normal'} text-sm`}>{a.text}</p></div>
+              <span className={`text-xs ${t.textMuted}`}>{a.time}</span>
+              {!a.read&&<span className="w-2 h-2 bg-gold-500 rounded-full"/>}
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Alert rules */}
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl p-6`}>
+        <h2 className={`font-semibold ${t.text} mb-4`}>Active Alert Rules</h2>
+        <div className="space-y-4">
+          {[
+            { name:'Bill Status Changes',trigger:'Any tracked bill changes status',delivery:'Immediate' },
+            { name:'Hearing Scheduled',trigger:'Hearing scheduled for tracked bills',delivery:'Immediate' },
+            { name:'Amendment Filed',trigger:'Amendment filed on tracked bills',delivery:'Daily Digest' },
+            { name:'Regulatory Deadlines',trigger:'Comment period within 7 days',delivery:'Weekly' },
+          ].map((rule,i)=>(
+            <div key={i} className={`flex items-center justify-between p-4 ${t.bgCard2} rounded-xl`}>
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-gold-500/20 rounded-lg flex items-center justify-center"><span className="text-gold-500">🔔</span></div>
+                <div><p className={`${t.text} font-medium`}>{rule.name}</p><p className={`${t.textMuted} text-sm`}>{rule.trigger}</p></div>
+              </div>
+              <div className="flex items-center gap-2 md:gap-3 overflow-x-auto">
+                <span className={`text-xs px-2.5 py-1 rounded-lg font-semibold ${rule.delivery==='Immediate'?'bg-sage-500/20 text-sage-500':rule.delivery==='Daily Digest'?'bg-sky-500/20 text-sky-500':'bg-violet-500/20 text-violet-400'}`}>{rule.delivery}</span>
+                <button className={`${t.textSub} hover:text-gold-500 text-sm`}>Edit</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===================== BUDGET =====================
+  const Budget = () => (
+    <div className="space-y-6 fade-in">
+      <div><h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>Budget Tracking</h1><p className={`${t.textSub} mt-1`}>California FY 2026-27</p></div>
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl p-6`}>
+        <h2 className={`font-semibold ${t.text} mb-6`}>Budget Calendar</h2>
+        <div className="flex items-center justify-between">
+          {[
+            { label:"Gov's Budget",date:'Jan 10',done:true },
+            { label:'LAO Analysis',date:'Feb 28',done:true },
+            { label:'May Revision',date:'May 14',current:true },
+            { label:'Budget Act',date:'Jun 15' },
+            { label:'Signed',date:'Jun 30' },
+          ].map((step,i)=>(
+            <div key={i} className="flex flex-col items-center">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold ${step.done?'bg-violet-500 text-white':step.current?'bg-violet-500 text-white ring-4 ring-violet-500/30':dark?'bg-warm-800 text-warm-800/50':'bg-cream-200 text-cream-400'}`}>{step.done?'✓':i+1}</div>
+              <p className={`mt-2 text-sm font-medium ${step.current?'text-violet-400':t.textMuted}`}>{step.label}</p>
+              <p className={`text-xs ${t.textMuted}`}>{step.date}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[
+          { label:'Total Budget Impact',val:'$2.5B',delta:'-$300M',color:'text-coral-500' },
+          { label:'Client Programs',val:'6',delta:'+1',color:'text-sage-500' },
+          { label:'Subcommittee Hearings',val:'4',delta:'2 upcoming',color:'text-sky-500' },
+        ].map((s,i)=>(
+          <div key={i} className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+            <p className={`text-sm ${t.textSub}`}>{s.label}</p>
+            <p className={`text-2xl md:text-3xl font-display font-bold ${t.text} mt-1`}>{s.val}</p>
+            <p className={`text-sm font-semibold ${s.color} mt-1`}>{s.delta}</p>
+          </div>
+        ))}
+      </div>
+      <div className="space-y-4">
+        {[
+          { name:'Affordable Housing Program',gov:'$2.1B',may:'$1.8B',change:-14,client:'CA Housing Coalition' },
+          { name:'Water Recycling Grants',gov:'$400M',may:'$450M',change:12,client:'Central Valley Water' },
+          { name:'Tech Workforce Development',gov:'$180M',may:'$200M',change:11,client:'Tech Alliance CA' },
+        ].map((item,i)=>(
+          <div key={i} className={`${t.bgCard} border ${t.border} rounded-2xl p-6`}>
+            <div className="flex items-start justify-between mb-4">
+              <h3 className={`text-lg font-semibold ${t.text}`}>{item.name}</h3>
+              <span className={`px-3 py-1 rounded-full text-sm font-semibold ${item.change<0?'bg-coral-500/20 text-coral-500':'bg-sage-500/20 text-sage-500'}`}>{item.change>0?'+':''}{item.change}%</span>
+            </div>
+            <div className="flex items-center gap-8">
+              <div><p className={`text-sm ${t.textMuted}`}>Gov's Budget</p><p className={`text-xl font-bold ${t.text}`}>{item.gov}</p></div>
+              <span className={t.textMuted}>→</span>
+              <div><p className={`text-sm ${t.textMuted}`}>May Revision</p><p className={`text-xl font-bold ${item.change<0?'text-coral-500':'text-sage-500'}`}>{item.may}</p></div>
+              <div className="flex-1"/>
+              <p className={`${t.textMuted} text-sm`}>Client: {item.client}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // ===================== FPPC =====================
+  const FPPC = () => (
+    <div className="space-y-6 fade-in">
+      <div><h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>FPPC Compliance</h1><p className={`${t.textSub} mt-1`}>Filing deadlines and requirements</p></div>
+      <div className="bg-coral-500/10 border-2 border-coral-500/30 rounded-2xl p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 bg-coral-500 rounded-xl flex flex-col items-center justify-center text-white"><span className="text-2xl font-bold">5</span><span className="text-xs">days</span></div>
+            <div><h3 className={`text-xl font-semibold ${t.text}`}>Q1 Form 460 Filing</h3><p className={t.textSub}>3 clients require filings</p></div>
+          </div>
+          <button className="bg-coral-500 hover:bg-coral-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors">Start Filing</button>
+        </div>
+      </div>
+      {/* Compliance Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        {[
+          { label:'Total PACs',val:'4',color:'text-sky-500' },
+          { label:'Filings Due',val:'3',color:'text-coral-500' },
+          { label:'YTD Raised',val:'$921K',color:'text-sage-500' },
+          { label:'Cash on Hand',val:'$325K',color:'text-gold-500' },
+        ].map((s,i)=>(
+          <div key={i} className={`${t.bgCard} border ${t.border} rounded-2xl p-4 text-center`}>
+            <p className={`text-sm ${t.textSub}`}>{s.label}</p>
+            <p className={`text-2xl font-display font-bold ${s.color} mt-1`}>{s.val}</p>
+          </div>
+        ))}
+      </div>
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl overflow-hidden`}>
+        <div className={`px-6 py-4 border-b ${t.border}`}><h2 className={`font-semibold ${t.text}`}>Client PACs</h2></div>
+        <div className="overflow-x-auto"><table className="w-full min-w-[600px]">
+          <thead><tr className={`border-b ${t.border} text-left`}>
+            {['PAC Name','YTD Raised','Cash on Hand','Q1 Receipts','Filing Status','Progress'].map(h=>(
+              <th key={h} className={`px-6 py-3 text-sm font-semibold ${t.textSub}`}>{h}</th>
+            ))}
+          </tr></thead>
+          <tbody className={`divide-y ${dark?'divide-navy-700/40':'divide-cream-200/60'}`}>
+            {[
+              { name:'CA Housing Coalition PAC',raised:'$245K',cash:'$62K',q1:'$85K',status:'due',pct:70 },
+              { name:'Tech Alliance CA PAC',raised:'$520K',cash:'$205K',q1:'$120K',status:'due',pct:45 },
+              { name:'Central Valley Water PAC',raised:'$156K',cash:'$58K',q1:'$42K',status:'current',pct:100 },
+            ].map((pac,i)=>(
+              <tr key={i} className={`${t.tableHover}`}>
+                <td className={`px-6 py-4 ${t.text} font-medium`}>{pac.name}</td>
+                <td className="px-6 py-4 text-sage-500 font-medium">{pac.raised}</td>
+                <td className={`px-6 py-4 ${t.text}`}>{pac.cash}</td>
+                <td className={`px-6 py-4 ${t.text}`}>{pac.q1}</td>
+                <td className="px-6 py-4"><span className={`text-xs px-2 py-1 rounded-full font-semibold ${pac.status==='due'?'bg-coral-500/20 text-coral-500':'bg-sage-500/20 text-sage-500'}`}>{pac.status==='due'?'Filing Due':'Current'}</span></td>
+                <td className="px-6 py-4"><div className="w-24"><ProgressBar pct={pac.pct} color={pac.pct===100?'bg-sage-500':'bg-gold-500'} h="h-1.5"/></div></td>
+              </tr>
+            ))}
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  );
+
+  // ===================== REPORTS =====================
+  const Reports = () => (
+    <div className="space-y-6 fade-in">
+      <div className="flex items-center justify-between">
+        <div><h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>Reports</h1><p className={`${t.textSub} mt-1`}>Generated reports and analytics</p></div>
+        <button className="bg-gold-500 hover:bg-gold-600 text-navy-900 px-5 py-2.5 rounded-xl font-semibold">+ Generate Report</button>
+      </div>
+      <div className={`bg-gradient-to-r ${dark?'from-violet-500/15 to-sky-500/10':'from-violet-500/10 to-sky-500/5'} border border-violet-500/20 rounded-2xl p-6`}>
+        <div className="flex items-center gap-3 mb-4"><span className="text-2xl">✨</span><h2 className="text-xl font-semibold text-violet-400">AI Quick Generate</h2></div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          {[
+            { label:'Weekly Updates',icon:'📧',desc:'Client email summaries' },
+            { label:'Bill Summary',icon:'📋',desc:'Detailed analysis' },
+            { label:'Hearing Recap',icon:'🎙️',desc:'AI-generated notes' },
+            { label:'Budget Impact',icon:'💰',desc:'Fiscal analysis' },
+          ].map((type,i)=>(
+            <button key={i} className={`${t.bgCard} border ${t.border} ${t.hoverBorder} rounded-xl p-4 text-left transition-all`}>
+              <span className="text-2xl mb-2 block">{type.icon}</span>
+              <p className={`font-semibold ${t.text}`}>{type.label}</p>
+              <p className={`text-xs ${t.textMuted} mt-1`}>{type.desc}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+      {/* Report Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+          <p className={`text-sm ${t.textSub}`}>Reports This Month</p>
+          <p className={`text-2xl md:text-3xl font-display font-bold ${t.text} mt-1`}>12</p>
+          <MiniChart data={[2,4,5,8,7,10,11,12]} color="#EDAE49" h={30}/>
+        </div>
+        <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+          <p className={`text-sm ${t.textSub}`}>Client Open Rate</p>
+          <p className={`text-2xl md:text-3xl font-display font-bold text-sage-500 mt-1`}>87%</p>
+          <MiniChart data={[70,72,75,78,80,82,85,87]} color="#7CB892" h={30}/>
+        </div>
+        <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+          <p className={`text-sm ${t.textSub}`}>Avg Time Saved</p>
+          <p className={`text-2xl md:text-3xl font-display font-bold text-violet-400 mt-1`}>4.2h</p>
+          <MiniChart data={[2,2.5,3,3.2,3.5,3.8,4,4.2]} color="#8B5CF6" h={30}/>
+        </div>
+      </div>
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl overflow-hidden`}>
+        <div className={`px-6 py-4 border-b ${t.border}`}><h2 className={`font-semibold ${t.text}`}>Recent Reports</h2></div>
+        <div className={`divide-y ${dark?'divide-navy-700/40':'divide-cream-200/60'}`}>
+          {[
+            { title:'Weekly Update - CA Housing Coalition',type:'Client Report',date:'Mar 1',status:'Sent',opened:true },
+            { title:'AB-1234 Analysis',type:'Bill Summary',date:'Feb 28',status:'Sent',opened:true },
+            { title:'Assembly Housing Committee',type:'Hearing Recap',date:'Feb 28',status:'Draft',opened:false },
+            { title:'Q1 Budget Impact Assessment',type:'Budget Analysis',date:'Feb 25',status:'Sent',opened:false },
+            { title:'Weekly Update - Tech Alliance CA',type:'Client Report',date:'Feb 22',status:'Sent',opened:true },
+          ].map((r,i)=>(
+            <div key={i} className={`px-6 py-4 ${t.tableHover} cursor-pointer flex items-center justify-between`}>
+              <div>
+                <p className={`font-medium ${t.text}`}>{r.title}</p>
+                <p className={`text-sm ${t.textMuted}`}>{r.type} · {r.date}</p>
+              </div>
+              <div className="flex items-center gap-2 md:gap-3 overflow-x-auto">
+                {r.opened&&r.status==='Sent'&&<span className="text-sage-500 text-xs font-medium">Opened</span>}
+                <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${r.status==='Sent'?'bg-sage-500/20 text-sage-500':dark?'bg-warm-800 text-cream-400':'bg-cream-200 text-navy-600'}`}>{r.status}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===================== CLIENT DETAIL MODAL =====================
+  const ClientDetailModal = () => (
+    <div className="fixed inset-0 z-50 flex">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={()=>setSelClient(null)}/>
+      <div className={`absolute right-0 top-0 bottom-0 w-full md:max-w-2xl ${dark?'bg-warm-950':'bg-cream-50'} border-l ${t.border} overflow-y-auto slide-in`}>
+        <div className={`sticky top-0 ${dark?'bg-warm-950':'bg-cream-50'} border-b ${t.border} p-6 flex items-center justify-between z-10`}>
+          <div className="flex items-center gap-4">
+            <button onClick={()=>setSelClient(null)} className={`${t.textSub} hover:text-gold-500`}>✕</button>
+            <h2 className={`text-xl font-display font-bold ${t.text}`}>{selClient?.name}</h2>
+          </div>
+          <button className="bg-gold-500 hover:bg-gold-600 text-navy-900 px-4 py-2 rounded-xl font-semibold">Send Report</button>
+        </div>
+        <div className="p-6 space-y-6">
+          <div className={`bg-gradient-to-r ${dark?'from-gold-500/10 to-violet-500/10':'from-gold-500/5 to-violet-500/5'} border border-gold-500/20 rounded-2xl p-5`}>
+            <h3 className={`font-semibold ${t.text} mb-3`}>Changes Since Last Report</h3>
+            <div className="grid grid-cols-4 gap-4 text-center">
+              <div><p className="text-2xl font-bold text-gold-500">+2</p><p className={`text-xs ${t.textMuted}`}>New</p></div>
+              <div><p className="text-2xl font-bold text-sky-500">4</p><p className={`text-xs ${t.textMuted}`}>Amended</p></div>
+              <div><p className="text-2xl font-bold text-sage-500">1</p><p className={`text-xs ${t.textMuted}`}>Passed</p></div>
+              <div><p className="text-2xl font-bold text-coral-500">3</p><p className={`text-xs ${t.textMuted}`}>Urgent</p></div>
+            </div>
+          </div>
+          <div className="bg-violet-500/10 border border-violet-500/20 rounded-2xl p-5">
+            <div className="flex items-center gap-2 mb-3"><span>✨</span><h3 className="font-semibold text-violet-400">AI Summary</h3></div>
+            <p className="text-violet-300 text-sm leading-relaxed">AB-1234 passed committee with amendments favorable to your position. Two new bills introduced that align with coalition priorities. Budget subcommittee reduced housing funding by 14% — recommend contacting members before May revision.</p>
+          </div>
+          <div className={`${t.bgCard} border ${t.border} rounded-2xl p-5`}>
+            <h3 className={`font-semibold ${t.text} mb-3`}>Health Score Trend</h3>
+            <MiniChart data={selClient?.trend||[70,68,65,60,58,62]} color={selClient?.health>80?'#7CB892':selClient?.health>60?'#EDAE49':'#FF6B6B'} h={60}/>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===================== COMMAND PALETTE =====================
+  const CommandPalette = () => (
+    <div className={`fixed inset-0 z-50 ${cmdOpen?'block':'hidden'}`}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={()=>setCmdOpen(false)}/>
+      <div className={`absolute top-4 md:top-[18%] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] md:w-full max-w-2xl ${dark?'bg-warm-900 border-gold-500/20':'bg-white border-gold-500/25'} border-2 rounded-3xl shadow-2xl overflow-hidden`} style={{boxShadow:dark?'0 25px 60px rgba(237,174,73,0.15)':'0 25px 60px rgba(237,174,73,0.1)'}}>
+        <div className="flex items-center gap-3 px-6 py-5 border-b border-gold-500/10">
+          <svg className="w-6 h-6 text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input autoFocus placeholder="Search bills, clients, legislators, hearings..." className={`w-full text-lg ${t.text} bg-transparent outline-none placeholder:${dark?'text-cream-400/30':'text-navy-600/30'}`}/>
+          <kbd className={`text-xs font-semibold px-2 py-1 rounded-lg ${dark?'bg-gold-500/15 text-gold-400':'bg-gold-500/10 text-gold-600'}`}>ESC</kbd>
+        </div>
+        <div className="p-3">
+          <p className={`text-[10px] font-semibold tracking-wider ${t.textMuted} px-3 py-2`}>QUICK ACTIONS</p>
+          {[
+            {icon:'📊',label:'Generate all client reports',hint:'AI'},
+            {icon:'🔍',label:'Search bills by keyword',hint:'Bills'},
+            {icon:'📅',label:'View today\'s calendar',hint:'Calendar'},
+            {icon:'✨',label:'Ask AI about pending legislation',hint:'AI'},
+            {icon:'💰',label:'View budget tracker',hint:'Budget'},
+            {icon:'📋',label:'Check FPPC filing deadlines',hint:'Compliance'},
+          ].map((a,i)=>(
+            <button key={i} onClick={()=>setCmdOpen(false)} className={`w-full flex items-center gap-3 px-4 py-3 ${t.hover} rounded-xl ${t.text} text-left text-sm transition-colors group`}>
+              <span className="text-lg">{a.icon}</span>
+              <span className="flex-1">{a.label}</span>
+              <span className={`text-xs px-2 py-0.5 rounded-md ${dark?'bg-gold-500/10 text-gold-400/50':'bg-gold-500/10 text-gold-600/50'} opacity-0 group-hover:opacity-100 transition-opacity`}>{a.hint}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===================== AI CHAT PANEL =====================
+  const ChatPanel = () => (
+    <div className={`fixed right-0 top-0 h-full w-full md:w-[420px] ${dark?'bg-warm-950':'bg-cream-50'} border-l ${dark?'border-gold-500/15':'border-gold-500/20'} transform transition-transform duration-300 z-40 ${chatOpen?'translate-x-0':'translate-x-full'} shadow-2xl`}>
+      {/* Warm gradient header */}
+      <div className="p-5 flex items-center justify-between" style={{background:'linear-gradient(135deg, #EDAE49 0%, #FF9F1C 40%, #FFB347 70%, #FFC94D 100%)'}}>
+        <div className="flex items-center gap-2 md:gap-3 overflow-x-auto">
+          <div className="w-11 h-11 bg-navy-900/20 backdrop-blur rounded-2xl flex items-center justify-center text-xl shadow-inner">✨</div>
+          <div>
+            <h3 className="font-display font-bold text-navy-900 text-lg">Legisly AI</h3>
+            <p className="text-sm text-navy-900/50 font-medium">Your legislative copilot</p>
+          </div>
+        </div>
+        <button onClick={()=>setChatOpen(false)} className="text-navy-900/60 hover:text-navy-900 hover:bg-navy-900/10 p-2 rounded-xl transition-colors">✕</button>
+      </div>
+      {/* AI Suggestions strip */}
+      <div className={`px-5 py-3 border-b ${dark?'border-gold-500/10':'border-gold-500/15'} ${dark?'bg-gold-500/5':'bg-gold-500/5'}`}>
+        <p className={`text-xs font-semibold ${dark?'text-gold-400/60':'text-gold-600/60'} mb-2`}>SUGGESTED</p>
+        <div className="flex gap-2 flex-wrap">
+          {['📋 Summarize today','✉️ Draft client update','⚖️ Compare bill versions','📊 Generate report'].map((q,i)=>(
+            <button key={i} className={`text-xs px-3 py-2 rounded-xl font-medium transition-all ${dark?'bg-gold-500/10 text-gold-400 border border-gold-500/15 hover:bg-gold-500/20 hover:border-gold-500/30':'bg-gold-500/10 text-gold-600 border border-gold-500/15 hover:bg-gold-500/20 hover:border-gold-500/30'}`}>{q}</button>
+          ))}
+        </div>
+      </div>
+      {/* Chat messages */}
+      <div className="p-5 space-y-4 h-[calc(100%-15rem)] overflow-y-auto">
+        <div className={`${dark?'bg-warm-800/80':'bg-cream-200/80'} rounded-2xl rounded-tl-sm p-4 ${t.textSub} text-sm leading-relaxed border ${dark?'border-gold-500/10':'border-gold-500/10'}`}>
+          <p>Good morning, Sarah! Here's your briefing:</p>
+          <div className="mt-3 space-y-2">
+            <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-coral-500"/><span className={`text-xs ${t.text}`}>AB-1234 floor vote scheduled today</span></div>
+            <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-gold-500"/><span className={`text-xs ${t.text}`}>2 new bills match CA Housing Coalition</span></div>
+            <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-sage-500"/><span className={`text-xs ${t.text}`}>SB-890 passed Senate yesterday</span></div>
+          </div>
+          <p className="mt-3">Want me to walk through these?</p>
+        </div>
+      </div>
+      {/* Input area */}
+      <div className={`absolute bottom-0 left-0 right-0 p-4 border-t ${dark?'border-gold-500/10':'border-gold-500/15'} ${dark?'bg-warm-950':'bg-cream-50'}`}>
+        <div className="flex gap-2">
+          <input placeholder="Ask anything about your bills..." className={`flex-1 px-4 py-3.5 rounded-2xl ${t.text} text-sm outline-none transition-all border-2 ${dark?'bg-warm-900 border-gold-500/15 focus:border-gold-500/40':'bg-white border-gold-500/20 focus:border-gold-500/50'}`}/>
+          <button className="p-3.5 bg-gradient-to-r from-gold-500 to-ember-500 hover:from-gold-400 hover:to-ember-400 text-navy-900 rounded-2xl font-bold shadow-lg shadow-gold-500/20 transition-all hover:shadow-gold-500/30">→</button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===================== SETTINGS / ONBOARDING =====================
+  const Settings = () => (
+    <div className="max-w-2xl mx-auto space-y-8 py-8 fade-in">
+      <div className="text-center">
+        <div className="w-16 h-16 bg-gradient-to-br from-gold-300 to-ember-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-gold-500/20">
+          <span className="text-navy-900 font-bold text-2xl font-display">L</span>
+        </div>
+        <h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>Welcome to Legisly</h1>
+        <p className={`${t.textSub} mt-2`}>Let's get your firm set up in a few minutes</p>
+      </div>
+
+      {/* Progress steps */}
+      <div className="flex items-center justify-between px-8">
+        {['Firm Info','Import Data','Add Clients','Invite Team'].map((step,i) => (
+          <div key={i} className="flex flex-col items-center">
+            <div className={`w-11 h-11 rounded-full flex items-center justify-center font-semibold transition-all ${i===0?'bg-gradient-to-br from-gold-400 to-ember-500 text-navy-900 shadow-lg shadow-gold-500/20':dark?'bg-warm-800 text-cream-400/40':'bg-cream-200 text-navy-600/40'}`}>{i===0?'✓':i+1}</div>
+            <p className={`mt-2 text-sm font-medium ${i===0?'text-gold-500':t.textMuted}`}>{step}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Current Step - Firm Info */}
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl p-8`}>
+        <h2 className={`text-xl font-display font-semibold ${t.text} mb-6`}>Firm Information</h2>
+        <div className="space-y-5">
+          <div>
+            <label className={`${t.textSub} text-sm mb-2 block font-medium`}>Firm Name</label>
+            <input type="text" placeholder="Acme Government Affairs" className={`w-full ${t.input} rounded-xl px-4 py-3 ${t.text} outline-none focus:border-gold-500 transition-colors`} />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={`${t.textSub} text-sm mb-2 block font-medium`}>Primary Contact</label>
+              <input type="text" placeholder="Your name" className={`w-full ${t.input} rounded-xl px-4 py-3 ${t.text} outline-none focus:border-gold-500 transition-colors`} />
+            </div>
+            <div>
+              <label className={`${t.textSub} text-sm mb-2 block font-medium`}>Email</label>
+              <input type="email" placeholder="you@firm.com" className={`w-full ${t.input} rounded-xl px-4 py-3 ${t.text} outline-none focus:border-gold-500 transition-colors`} />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={`${t.textSub} text-sm mb-2 block font-medium`}>Phone</label>
+              <input type="tel" placeholder="(916) 555-0100" className={`w-full ${t.input} rounded-xl px-4 py-3 ${t.text} outline-none focus:border-gold-500 transition-colors`} />
+            </div>
+            <div>
+              <label className={`${t.textSub} text-sm mb-2 block font-medium`}>State Focus</label>
+              <select className={`w-full ${t.input} rounded-xl px-4 py-3 ${t.text} outline-none focus:border-gold-500`}>
+                <option>California</option>
+                <option>Federal</option>
+                <option>Multi-state</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className={`${t.textSub} text-sm mb-2 block font-medium`}>Logo (optional)</label>
+            <div className={`border-2 border-dashed ${dark?'border-gold-500/15 hover:border-gold-500/30':'border-gold-500/20 hover:border-gold-500/40'} rounded-xl p-8 text-center cursor-pointer transition-colors`}>
+              <span className="text-3xl mb-2 block">📤</span>
+              <p className={t.textMuted}>Drag and drop or click to upload</p>
+              <p className={`text-xs ${t.textMuted} mt-1`}>PNG, SVG, or JPG up to 2MB</p>
+            </div>
+          </div>
+        </div>
+        <div className="mt-8 flex justify-end">
+          <button className="bg-gradient-to-r from-gold-500 to-ember-500 hover:from-gold-400 hover:to-ember-400 text-navy-900 px-6 py-3 rounded-xl font-semibold transition-all shadow-lg shadow-gold-500/20">Continue →</button>
+        </div>
+      </div>
+
+      {/* Additional Settings */}
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl p-6`}>
+        <h2 className={`font-semibold ${t.text} mb-4`}>Notification Preferences</h2>
+        <div className="space-y-4">
+          {[
+            { label:'Daily Digest Email',desc:'Summary of all activity sent at 7:00 AM PT',on:true },
+            { label:'Instant Bill Alerts',desc:'Push notifications for tracked bill changes',on:true },
+            { label:'Weekly Summary Report',desc:'Comprehensive weekly analysis every Friday',on:false },
+            { label:'Hearing Reminders',desc:'30 min before hearings with your tracked bills',on:true },
+          ].map((pref,i)=>(
+            <div key={i} className={`flex items-center justify-between p-4 ${t.bgCard2} rounded-xl`}>
+              <div>
+                <p className={`${t.text} font-medium`}>{pref.label}</p>
+                <p className={`${t.textMuted} text-sm`}>{pref.desc}</p>
+              </div>
+              <div className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${pref.on?'bg-gold-500':'bg-warm-800'}`}>
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${pref.on?'right-1':'left-1'}`}/>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Team & Billing */}
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl p-6`}>
+        <h2 className={`font-semibold ${t.text} mb-4`}>Team Members</h2>
+        <div className="space-y-3">
+          {[
+            { name:'Sarah Chen',email:'sarah@firm.com',role:'Admin' },
+            { name:'David Kim',email:'david@firm.com',role:'Editor' },
+          ].map((m,i)=>(
+            <div key={i} className={`flex items-center justify-between p-3 ${t.bgCard2} rounded-xl`}>
+              <div className="flex items-center gap-2 md:gap-3 overflow-x-auto">
+                <div className="w-9 h-9 bg-gradient-to-br from-gold-400 to-ember-500 rounded-full flex items-center justify-center text-navy-900 font-bold text-sm">{m.name.split(' ').map(n=>n[0]).join('')}</div>
+                <div><p className={`${t.text} font-medium text-sm`}>{m.name}</p><p className={`${t.textMuted} text-xs`}>{m.email}</p></div>
+              </div>
+              <span className={`text-xs px-2 py-1 rounded-lg font-semibold ${m.role==='Admin'?'bg-gold-500/20 text-gold-500':'bg-sky-500/20 text-sky-500'}`}>{m.role}</span>
+            </div>
+          ))}
+        </div>
+        <button className="mt-3 text-gold-500 hover:text-gold-400 text-sm font-semibold">+ Invite team member</button>
+      </div>
+    </div>
+  );
+
+  // ===================== DATA IMPORT / MIGRATION =====================
+  const DataImport = () => (
+    <div className="max-w-3xl mx-auto space-y-8 py-8 fade-in">
+      <div className="text-center">
+        <h1 className={`text-2xl md:text-3xl font-display font-bold ${t.text}`}>Import Your Data</h1>
+        <p className={`${t.textSub} mt-2`}>Migrate from CapitolTrack, spreadsheets, or other systems</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        {/* CapitolTrack Import */}
+        <div className={`${t.bgCard} border-2 ${t.border} rounded-2xl p-6 ${t.hoverBorder} cursor-pointer transition-all group`}>
+          <div className="w-12 h-12 bg-gold-500/15 rounded-xl flex items-center justify-center mb-4 group-hover:bg-gold-500/25 transition-colors">
+            <span className="text-2xl">📊</span>
+          </div>
+          <h3 className={`text-xl font-display font-semibold ${t.text}`}>CapitolTrack Import</h3>
+          <p className={`${t.textSub} mt-2 text-sm`}>Import bill lists, positions, tags, notes, and historical tracking data</p>
+          <div className="mt-4 space-y-2 text-sm">
+            {['Client bill assignments','Position history','Tags and notes','Historical data'].map((item,i)=>(
+              <div key={i} className="flex items-center gap-2"><span className="text-sage-500">✓</span><span className={t.textSub}>{item}</span></div>
+            ))}
+          </div>
+          <div className="mt-4 pt-4 border-t border-gold-500/10">
+            <div className="flex items-center gap-2"><span className="bg-sage-500/20 text-sage-500 text-xs px-2 py-0.5 rounded-full font-semibold">Recommended</span></div>
+          </div>
+        </div>
+
+        {/* CSV/Excel Import */}
+        <div className={`${t.bgCard} border-2 ${t.border} rounded-2xl p-6 ${t.hoverBorder} cursor-pointer transition-all group`}>
+          <div className="w-12 h-12 bg-sky-500/15 rounded-xl flex items-center justify-center mb-4 group-hover:bg-sky-500/25 transition-colors">
+            <span className="text-2xl">📁</span>
+          </div>
+          <h3 className={`text-xl font-display font-semibold ${t.text}`}>CSV / Excel Import</h3>
+          <p className={`${t.textSub} mt-2 text-sm`}>Import from spreadsheets or other legacy systems</p>
+          <div className="mt-4 space-y-2 text-sm">
+            {['Bill lists','Client lists','Contact lists','Custom fields'].map((item,i)=>(
+              <div key={i} className="flex items-center gap-2"><span className="text-sage-500">✓</span><span className={t.textSub}>{item}</span></div>
+            ))}
+          </div>
+          <div className="mt-4 pt-4 border-t border-gold-500/10">
+            <div className="flex items-center gap-2"><span className={`text-xs ${t.textMuted}`}>Supports .xlsx, .csv, .tsv</span></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Additional import options */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[
+          { icon:'🔗',label:'CRM Sync',desc:'Salesforce, HubSpot',status:'Coming Soon' },
+          { icon:'📧',label:'Email Import',desc:'Gmail, Outlook contacts',status:'Coming Soon' },
+          { icon:'🌐',label:'API Integration',desc:'Custom data sources',status:'Available' },
+        ].map((opt,i)=>(
+          <div key={i} className={`${t.bgCard} border ${t.border} rounded-2xl p-4 ${opt.status==='Available'?`${t.hoverBorder} cursor-pointer`:''} transition-all`}>
+            <span className="text-2xl mb-2 block">{opt.icon}</span>
+            <p className={`${t.text} font-semibold text-sm`}>{opt.label}</p>
+            <p className={`${t.textMuted} text-xs mt-1`}>{opt.desc}</p>
+            <span className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full font-semibold ${opt.status==='Available'?'bg-sage-500/20 text-sage-500':'bg-gold-500/15 text-gold-400'}`}>{opt.status}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Upload Area */}
+      <div className={`${t.bgCard} border-2 border-dashed ${dark?'border-gold-500/20 hover:border-gold-500/35':'border-gold-500/25 hover:border-gold-500/45'} rounded-2xl p-12 text-center cursor-pointer transition-all group`}>
+        <div className={`w-16 h-16 ${dark?'bg-warm-800':'bg-cream-200'} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-gold-500/20 transition-colors`}>
+          <span className="text-3xl">📤</span>
+        </div>
+        <p className={`${t.text} font-semibold`}>Drop files here or click to browse</p>
+        <p className={`${t.textMuted} text-sm mt-2`}>Supports .xlsx, .csv, .xml exports from CapitolTrack and other systems</p>
+        <p className={`${t.textMuted} text-xs mt-1`}>Maximum file size: 50MB</p>
+      </div>
+
+      {/* Recent Imports */}
+      <div className={`${t.bgCard} border ${t.border} rounded-2xl p-6`}>
+        <h2 className={`font-semibold ${t.text} mb-4`}>Import History</h2>
+        <div className="space-y-3">
+          {[
+            { file:'capitoltrack_export_2026.xlsx',date:'Mar 1, 2026',records:'342 bills, 12 clients',status:'Complete' },
+            { file:'contacts_crm.csv',date:'Feb 28, 2026',records:'156 contacts',status:'Complete' },
+          ].map((imp,i)=>(
+            <div key={i} className={`flex items-center justify-between p-4 ${t.bgCard2} rounded-xl`}>
+              <div className="flex items-center gap-2 md:gap-3 overflow-x-auto">
+                <div className="w-10 h-10 bg-sage-500/15 rounded-lg flex items-center justify-center"><span className="text-sage-500">📄</span></div>
+                <div>
+                  <p className={`${t.text} font-medium text-sm`}>{imp.file}</p>
+                  <p className={`${t.textMuted} text-xs`}>{imp.date} · {imp.records}</p>
+                </div>
+              </div>
+              <span className="bg-sage-500/20 text-sage-500 text-xs px-2 py-1 rounded-full font-semibold">{imp.status}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex justify-between">
+        <button className={`${t.textSub} hover:text-gold-500 transition-colors font-medium`}>Skip for now</button>
+        <button className="bg-gradient-to-r from-gold-500 to-ember-500 hover:from-gold-400 hover:to-ember-400 text-navy-900 px-6 py-3 rounded-xl font-semibold transition-all shadow-lg shadow-gold-500/20">Continue →</button>
+      </div>
+    </div>
+  );
+
+  // ===================== NAV + RENDER =====================
+  const navItems = [
+    { id:'dashboard',label:'Dashboard',icon:'⬡' },
+    { id:'bills',label:'Bills',icon:'☰' },
+    { id:'calendar',label:'Calendar',icon:'📅' },
+    { id:'legislators',label:'Legislators',icon:'👤' },
+    { id:'live',label:'Live',icon:'◉',live:true },
+    { id:'clients',label:'Clients',icon:'◎' },
+    { id:'crm',label:'CRM',icon:'📇' },
+    { id:'regulatory',label:'Regulatory',icon:'📜' },
+    { id:'alerts',label:'Alerts',icon:'🔔' },
+    { id:'budget',label:'Budget',icon:'💰' },
+    { id:'fppc',label:'FPPC',icon:'📋' },
+    { id:'reports',label:'Reports',icon:'📊' },
+  ];
+
+  const bottomNavItems = [
+    { id:'settings',label:'Setup',icon:'⚙️' },
+    { id:'import',label:'Import Data',icon:'📤' },
+  ];
+
+  const renderScreen = () => {
+    if (selBill) return <BillDetail/>;
+    if (selLeg) return <LegislatorDetail/>;
+    switch(screen) {
+      case 'dashboard': return <Dashboard/>;
+      case 'bills': return <AllBills/>;
+      case 'calendar': return <CalendarScreen/>;
+      case 'legislators': return <Legislators/>;
+      case 'live': return <LiveHearings/>;
+      case 'clients': return <Clients/>;
+      case 'crm': return <CRM/>;
+      case 'regulatory': return <Regulatory/>;
+      case 'alerts': return <Alerts/>;
+      case 'budget': return <Budget/>;
+      case 'fppc': return <FPPC/>;
+      case 'reports': return <Reports/>;
+      case 'settings': return <Settings/>;
+      case 'import': return <DataImport/>;
+      default: return <Dashboard/>;
+    }
+  };
+
+  return (
+    <div className={`min-h-screen ${t.bg} flex ${dark?'dark':'light'}`}>
+      {/* Mobile nav overlay */}
+      {mobileNav&&<div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={()=>setMobileNav(false)}/>}
+
+      {/* Sidebar - hidden on mobile, overlay when toggled */}
+      <div className={`${sideExp?'w-56':'w-20'} flex-col transition-all shrink-0 z-50 hidden md:flex`} style={{background:dark?'linear-gradient(180deg, #1A2840 0%, #16192A 40%, #1E2235 70%, #1A2030 100%)':'linear-gradient(180deg, #FFF8F0 0%, #FFE8C7 40%, #FFDDA0 70%, #FFE8C7 100%)'}}>
+        <div className="p-4 flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-gold-300 to-ember-500 rounded-xl flex items-center justify-center cursor-pointer shadow-lg shadow-gold-500/20" onClick={()=>setSideExp(!sideExp)}>
+            <span className="text-navy-900 font-bold text-lg font-display">L</span>
+          </div>
+          {sideExp&&<span className="text-xl font-display font-bold bg-gradient-to-r from-gold-400 to-ember-500 bg-clip-text text-transparent">legisly</span>}
+        </div>
+
+        <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
+          {navItems.map(item=>(
+            <button key={item.id} onClick={()=>{setScreen(item.id);setSelBill(null);setSelLeg(null);setAlertsOpen(false);}} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${screen===item.id?'bg-gold-500 text-navy-900 shadow-lg shadow-gold-500/20':dark?'text-cream-300/60 hover:text-cream-100 hover:bg-white/5':'text-navy-600 hover:text-navy-900 hover:bg-black/5'}`}>
+              <span className="text-lg relative">
+                {item.icon}
+                {item.live&&<span className="absolute -top-1 -right-1 w-2 h-2 bg-coral-500 rounded-full anim-pulse"/>}
+              </span>
+              {sideExp&&<span className="font-medium text-sm">{item.label}</span>}
+            </button>
+          ))}
+
+          {sideExp&&<div className={`my-2 border-t ${dark?'border-gold-500/8':'border-gold-500/10'}`}/>}
+
+          {bottomNavItems.map(item=>(
+            <button key={item.id} onClick={()=>{setScreen(item.id);setSelBill(null);setSelLeg(null);setAlertsOpen(false);}} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${screen===item.id?'bg-gold-500 text-navy-900 shadow-lg shadow-gold-500/20':dark?'text-cream-300/40 hover:text-cream-100 hover:bg-white/5':'text-navy-600/50 hover:text-navy-900 hover:bg-black/5'}`}>
+              <span className="text-lg">{item.icon}</span>
+              {sideExp&&<span className="font-medium text-sm">{item.label}</span>}
+            </button>
+          ))}
+        </nav>
+
+        <div className={`p-3 border-t ${dark?'border-gold-500/10':'border-gold-500/15'}`}>
+          {sideExp ? (
+            <button onClick={()=>setChatOpen(!chatOpen)} className={`w-full rounded-2xl p-3.5 transition-all ${chatOpen?'bg-gradient-to-r from-gold-400 via-ember-400 to-gold-500 text-navy-900 shadow-lg shadow-gold-500/30':'bg-gradient-to-br from-gold-500/10 via-ember-500/10 to-violet-500/10 border border-gold-500/20 hover:border-gold-500/40 hover:from-gold-500/20 hover:via-ember-500/20 hover:to-violet-500/20'}`}>
+              <div className="flex items-center gap-2 md:gap-3 overflow-x-auto">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${chatOpen?'bg-navy-900/20':'bg-gold-500/20'}`}>
+                  <span className="text-lg">✨</span>
+                </div>
+                <div className="text-left">
+                  <p className={`font-semibold text-sm ${chatOpen?'text-navy-900':'text-gold-400'}`}>Legisly AI</p>
+                  <p className={`text-[10px] ${chatOpen?'text-navy-900/60':'text-gold-500/50'}`}>3 suggestions</p>
+                </div>
+              </div>
+            </button>
+          ) : (
+            <button onClick={()=>setChatOpen(!chatOpen)} className={`w-full flex justify-center p-3 rounded-xl transition-all ai-pulse ${chatOpen?'bg-gradient-to-r from-gold-400 to-gold-500':'bg-gold-500/15 hover:bg-gold-500/25 border border-gold-500/20'}`}>
+              <span className="text-xl">✨</span>
+            </button>
+          )}
+        </div>
+
+        <div className={`p-4 border-t ${dark?'border-gold-500/10':'border-gold-500/15'}`}>
+          <div className="flex items-center gap-2 md:gap-3 overflow-x-auto">
+            <div className="w-10 h-10 bg-gradient-to-br from-gold-300 to-ember-500 rounded-full flex items-center justify-center text-navy-900 font-bold shadow-md">S</div>
+            {sideExp&&<div><p className={`${dark?'text-cream-100':'text-navy-900'} font-medium text-sm`}>Sarah Chen</p><p className={`${dark?'text-cream-300/50':'text-navy-600/50'} text-xs`}>Admin</p></div>}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Sidebar Drawer */}
+      <div className={`fixed top-0 left-0 bottom-0 w-72 z-50 flex flex-col transform transition-transform duration-300 md:hidden ${mobileNav?'translate-x-0':'-translate-x-full'}`} style={{background:dark?'linear-gradient(180deg, #1A2840 0%, #16192A 40%, #1E2235 70%, #1A2030 100%)':'linear-gradient(180deg, #FFF8F0 0%, #FFE8C7 40%, #FFDDA0 70%, #FFE8C7 100%)'}}>
+        <div className="p-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 md:gap-3 overflow-x-auto">
+            <div className="w-10 h-10 bg-gradient-to-br from-gold-300 to-ember-500 rounded-xl flex items-center justify-center shadow-lg shadow-gold-500/20">
+              <span className="text-navy-900 font-bold text-lg font-display">L</span>
+            </div>
+            <span className="text-xl font-display font-bold bg-gradient-to-r from-gold-400 to-ember-500 bg-clip-text text-transparent">legisly</span>
+          </div>
+          <button onClick={()=>setMobileNav(false)} className={`p-2 rounded-lg ${dark?'text-cream-300 hover:bg-white/10':'text-navy-600 hover:bg-black/5'}`}>✕</button>
+        </div>
+
+        <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
+          {navItems.map(item=>(
+            <button key={item.id} onClick={()=>{setScreen(item.id);setSelBill(null);setSelLeg(null);setMobileNav(false);setAlertsOpen(false);}} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${screen===item.id?'bg-gold-500 text-navy-900 shadow-lg shadow-gold-500/20':dark?'text-cream-300/60 hover:text-cream-100 hover:bg-white/5':'text-navy-600 hover:text-navy-900 hover:bg-black/5'}`}>
+              <span className="text-lg relative">
+                {item.icon}
+                {item.live&&<span className="absolute -top-1 -right-1 w-2 h-2 bg-coral-500 rounded-full anim-pulse"/>}
+              </span>
+              <span className="font-medium text-sm">{item.label}</span>
+            </button>
+          ))}
+          <div className={`my-2 border-t ${dark?'border-gold-500/8':'border-gold-500/10'}`}/>
+          {bottomNavItems.map(item=>(
+            <button key={item.id} onClick={()=>{setScreen(item.id);setSelBill(null);setSelLeg(null);setMobileNav(false);}} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${screen===item.id?'bg-gold-500 text-navy-900 shadow-lg shadow-gold-500/20':dark?'text-cream-300/40 hover:text-cream-100 hover:bg-white/5':'text-navy-600/50 hover:text-navy-900 hover:bg-black/5'}`}>
+              <span className="text-lg">{item.icon}</span>
+              <span className="font-medium text-sm">{item.label}</span>
+            </button>
+          ))}
+        </nav>
+
+        <div className={`p-3 border-t ${dark?'border-gold-500/10':'border-gold-500/15'}`}>
+          <button onClick={()=>{setChatOpen(!chatOpen);setMobileNav(false);}} className="w-full bg-gradient-to-r from-gold-400 via-ember-400 to-gold-500 text-navy-900 rounded-2xl p-3.5 font-semibold flex items-center gap-3 shadow-lg shadow-gold-500/20">
+            <span className="text-lg">✨</span>
+            <span>Legisly AI</span>
+          </button>
+        </div>
+
+        <div className={`p-4 border-t ${dark?'border-gold-500/10':'border-gold-500/15'}`}>
+          <div className="flex items-center gap-2 md:gap-3 overflow-x-auto">
+            <div className="w-10 h-10 bg-gradient-to-br from-gold-300 to-ember-500 rounded-full flex items-center justify-center text-navy-900 font-bold shadow-md">S</div>
+            <div><p className={`${dark?'text-cream-100':'text-navy-900'} font-medium text-sm`}>Sarah Chen</p><p className={`${dark?'text-cream-300/50':'text-navy-600/50'} text-xs`}>Admin</p></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top bar - responsive */}
+        <div className={`px-3 md:px-6 py-3 border-b ${t.border} flex items-center gap-2 md:gap-4`} style={{background:dark?'linear-gradient(90deg, #16192A 0%, #1A1D30 50%, #16192A 100%)':'linear-gradient(90deg, #FFFEF9 0%, #FFF8F0 50%, #FFFEF9 100%)'}}>
+          {/* Mobile hamburger */}
+          <button onClick={()=>setMobileNav(true)} className={`p-2 rounded-xl md:hidden ${t.bgCard} border ${t.border}`}>
+            <svg className={`w-5 h-5 ${t.textSub}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+
+          {/* Search - PROMINENT - responsive */}
+          <div className="flex-1 md:max-w-2xl relative" onClick={()=>setCmdOpen(true)}>
+            <div className={`flex items-center gap-2 md:gap-3 px-3 md:px-5 py-2.5 md:py-3 rounded-2xl border-2 cursor-pointer transition-all warm-glow ${dark?'bg-warm-900/90 border-gold-500/20 hover:border-gold-500/40':'bg-white border-gold-500/25 hover:border-gold-500/50'}`}>
+              <svg className="w-5 h-5 text-gold-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <span className={`text-sm ${t.textSub} truncate hidden sm:inline`}>Search bills, clients, legislators...</span>
+              <span className={`text-sm ${t.textSub} sm:hidden`}>Search...</span>
+              <div className="ml-auto items-center gap-2 hidden md:flex">
+                <kbd className={`text-xs font-semibold px-2 py-1 rounded-lg ${dark?'bg-gold-500/15 text-gold-400 border border-gold-500/20':'bg-gold-500/10 text-gold-600 border border-gold-500/20'}`}>⌘K</kbd>
+              </div>
+            </div>
+          </div>
+
+          {/* AI Assistant - hidden label on mobile */}
+          <button onClick={()=>setChatOpen(!chatOpen)} className={`flex items-center gap-2 px-3 md:px-5 py-2.5 md:py-3 rounded-2xl font-semibold transition-all shrink-0 ${chatOpen?'bg-gradient-to-r from-gold-400 via-ember-400 to-gold-500 text-navy-900 shadow-lg shadow-gold-500/30':'bg-gradient-to-r from-gold-500/15 to-ember-500/15 text-gold-400 border-2 border-gold-500/20 hover:border-gold-500/40 hover:from-gold-500/25 hover:to-ember-500/25'} ai-pulse`}>
+            <span className="text-lg md:text-xl">✨</span>
+            <span className="hidden md:inline">Ask AI</span>
+          </button>
+
+          {/* Alerts Bell */}
+          <div className="relative">
+            <button onClick={()=>setAlertsOpen(!alertsOpen)} className={`relative p-2.5 rounded-xl transition-all shrink-0 ${alertsOpen?'bg-gold-500/20 border border-gold-500/30':`${t.bgCard} border ${t.border} ${t.hover}`}`}>
+              <svg className={`w-5 h-5 ${alertsOpen?'text-gold-500':t.textSub}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+              <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-coral-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold shadow-sm">5</span>
+            </button>
+            {alertsOpen && (
+              <div className={`absolute right-0 top-full mt-2 w-80 md:w-96 ${dark?'bg-warm-900 border-gold-500/15':'bg-white border-gold-500/20'} border-2 rounded-2xl shadow-2xl z-50 overflow-hidden`} style={{boxShadow:dark?'0 20px 50px rgba(0,0,0,0.5)':'0 20px 50px rgba(0,0,0,0.1)'}}>
+                <div className={`px-4 py-3 border-b ${dark?'border-gold-500/10':'border-gold-500/10'} flex items-center justify-between`}>
+                  <span className={`font-semibold ${t.text}`}>Notifications</span>
+                  <button onClick={()=>{setAlertsOpen(false);setScreen('alerts');}} className="text-gold-500 text-xs font-semibold hover:text-gold-400">View All →</button>
+                </div>
+                <div className="max-h-80 overflow-y-auto">
+                  {[
+                    { text:'AB-1234 amended in committee',time:'2h ago',type:'amendment',read:false },
+                    { text:'Hearing scheduled: AB-567 Mar 15',time:'4h ago',type:'hearing',read:false },
+                    { text:'SB-890 passed Senate floor vote',time:'1d ago',type:'vote',read:true },
+                    { text:'OAL comment period opens',time:'1d ago',type:'regulatory',read:true },
+                    { text:'New bill match: AB-2847 → CA Housing',time:'2d ago',type:'match',read:true },
+                  ].map((a,i)=>(
+                    <div key={i} className={`px-4 py-3 flex items-start gap-3 cursor-pointer transition-colors ${!a.read?dark?'bg-gold-500/5':'bg-gold-500/5':''} ${dark?'hover:bg-warm-800/50':'hover:bg-cream-100'} ${i>0?`border-t ${dark?'border-gold-500/5':'border-gold-500/5'}`:''}`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${a.type==='amendment'?'bg-gold-500/15':a.type==='hearing'?'bg-sky-500/15':a.type==='vote'?'bg-sage-500/15':a.type==='regulatory'?'bg-violet-500/15':'bg-coral-500/15'}`}>
+                        <span className="text-sm">{a.type==='amendment'?'📝':a.type==='hearing'?'🏛️':a.type==='vote'?'✅':a.type==='regulatory'?'📜':'🔔'}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm ${!a.read?`font-semibold ${t.text}`:t.textSub}`}>{a.text}</p>
+                        <p className={`text-xs ${t.textMuted} mt-0.5`}>{a.time}</p>
+                      </div>
+                      {!a.read&&<span className="w-2 h-2 bg-gold-500 rounded-full mt-2 shrink-0"/>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Theme toggle */}
+          <button onClick={()=>setDark(!dark)} className={`p-2.5 rounded-xl shrink-0 ${t.bgCard} border ${t.border} ${t.hover} transition-all hidden sm:block`} title="Toggle theme">
+            <span className="text-lg">{dark?'☀️':'🌙'}</span>
+          </button>
+        </div>
+
+        {/* AI Context Strip */}
+        {!chatOpen && (
+          <div className={`px-3 md:px-6 py-2 flex items-center gap-3 cursor-pointer transition-all ${dark?'bg-gradient-to-r from-gold-500/5 via-ember-500/5 to-violet-500/5 hover:from-gold-500/10 hover:via-ember-500/10 hover:to-violet-500/10':'bg-gradient-to-r from-gold-500/5 via-ember-500/5 to-violet-500/5 hover:from-gold-500/10 hover:via-ember-500/10 hover:to-violet-500/10'} border-b ${t.border}`} onClick={()=>setChatOpen(true)}>
+            <span className="text-sm">✨</span>
+            <span className={`text-xs ${dark?'text-gold-400/70':'text-gold-600/70'} truncate`}>3 items need attention · AB-1234 floor vote today · 2 new bill matches</span>
+            <span className={`text-xs ${dark?'text-gold-500':'text-gold-600'} font-semibold ml-auto shrink-0`}>Ask AI →</span>
+          </div>
+        )}
+
+        <div className="flex-1 p-4 md:p-8 overflow-auto" onClick={()=>alertsOpen&&setAlertsOpen(false)}>
+          <div className="max-w-7xl mx-auto">{renderScreen()}</div>
+        </div>
+      </div>
+
+      <CommandPalette/>
+      <ChatPanel/>
+      {selClient&&<ClientDetailModal/>}
+    </div>
+  );
+};
+
+ReactDOM.render(<App/>, document.getElementById('root'));
+  </script>
+</body>
+</html>
